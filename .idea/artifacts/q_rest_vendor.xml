@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="q-rest-vendor">
+    <output-path>$PROJECT_DIR$/out/artifacts/q_rest_vendor.war</output-path>
+    <root id="archive" name="q-rest-vendor.war">
+      <element id="javaee-facet-resources" facet="q-rest-vendor/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="q-rest-vendor" />
+        </element>
+      </element>
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/web/WEB-INF/META-INF/MANIFEST.MF" />
+      </element>
+    </root>
+  </artifact>
+</component>
