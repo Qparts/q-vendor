@@ -2,6 +2,7 @@ package q.rest.vendor.operation;
 
 import q.rest.vendor.dao.DAO;
 import q.rest.vendor.filter.SecuredUser;
+import q.rest.vendor.model.entity.Courier;
 import q.rest.vendor.model.entity.Vendor;
 import q.rest.vendor.model.entity.VendorCategory;
 import q.rest.vendor.model.entity.VendorContact;
@@ -40,6 +41,19 @@ public class VendorInternalApiV2 {
     }
 
     @SecuredUser
+    @GET
+    @Path("couriers")
+    public Response getAllCouriers() {
+        try {
+            List<Courier> couriers= dao.getOrderBy(Courier.class, "id");
+            return Response.status(200).entity(couriers).build();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
     @POST
     @Path("vendor")
     public Response createVendor(Vendor vendor){
@@ -63,6 +77,36 @@ public class VendorInternalApiV2 {
             return Response.status(201).build();
 
         }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("courier")
+    public Response createCourier(Courier courier) {
+        try {
+            Courier c = dao.findCondition(Courier.class, "name", courier.getName());
+            if (c != null) {
+                return Response.status(409).build();
+            }
+            dao.persist(courier);
+            return Response.status(201).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
+
+    @SecuredUser
+    @GET
+    @Path("courier/{param}")
+    public Response getCourier(@PathParam(value = "param") int cId) {
+        try {
+            Courier courier = dao.find(Courier.class, cId);
+            return Response.status(200).entity(courier).build();
+        } catch (Exception ex) {
             return Response.status(500).build();
         }
     }
