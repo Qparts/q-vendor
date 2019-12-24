@@ -1,8 +1,8 @@
-package q.rest.vendor.filter;
+package q.rest.vendor.filter.agents;
 
 
 import q.rest.vendor.dao.DAO;
-import q.rest.vendor.filter.SecuredCustomer;
+import q.rest.vendor.filter.SecuredUser;
 import q.rest.vendor.helper.AppConstants;
 import q.rest.vendor.model.entity.WebApp;
 
@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-@SecuredCustomer
+@SecuredUser
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-public class SecuredCustomerAgent implements ContainerRequestFilter {
+public class SecuredUserAgent implements ContainerRequestFilter {
 
     @EJB
     private DAO dao;
@@ -53,10 +53,10 @@ public class SecuredCustomerAgent implements ContainerRequestFilter {
 
     private void matchToken(String token, String username, String appSecret, String type, String header) throws NotAuthorizedException{
         validateSecret(appSecret);
-        if(!type.equals("C")){
+        if(!type.equals("U")){
             throw new NotAuthorizedException("Request authorization failed");
         }
-        String link = AppConstants.CUSTOMER_MATCH_TOKEN;
+        String link = AppConstants.USER_MATCH_TOKEN;
         Map<String,String> map = new HashMap<>();
         map.put("username", username);
         map.put("appSecret", appSecret);

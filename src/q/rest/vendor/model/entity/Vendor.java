@@ -28,7 +28,17 @@ public class Vendor implements Serializable {
     @Column(name="created_by")
     private int createdBy;
     @Column(name="city_id")
-    private int cityId;
+    private Integer cityId;
+    @Column(name="note")
+    private String notes;
+    @Column(name="integration_secret_code")
+    private String integrationSecretCode;
+    @Column(name="integration_type")
+    private Character integrationType;
+    @Column(name="endpoint_address")
+    private String endpointAddress;
+
+
     @Transient
     private List<VendorCategory> vendorCategories;
     @Transient
@@ -36,6 +46,38 @@ public class Vendor implements Serializable {
 
     public List<VendorContact> getVendorContacts() {
         return vendorContacts;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public String getIntegrationSecretCode() {
+        return integrationSecretCode;
+    }
+
+    public void setIntegrationSecretCode(String integrationSecretCode) {
+        this.integrationSecretCode = integrationSecretCode;
+    }
+
+    public Character getIntegrationType() {
+        return integrationType;
+    }
+
+    public void setIntegrationType(Character integrationType) {
+        this.integrationType = integrationType;
+    }
+
+    public String getEndpointAddress() {
+        return endpointAddress;
+    }
+
+    public void setEndpointAddress(String endpointAddress) {
+        this.endpointAddress = endpointAddress;
     }
 
     public void setVendorContacts(List<VendorContact> vendorContacts) {
@@ -102,11 +144,11 @@ public class Vendor implements Serializable {
         this.createdBy = createdBy;
     }
 
-    public int getCityId() {
+    public Integer getCityId() {
         return cityId;
     }
 
-    public void setCityId(int cityId) {
+    public void setCityId(Integer cityId) {
         this.cityId = cityId;
     }
 }
