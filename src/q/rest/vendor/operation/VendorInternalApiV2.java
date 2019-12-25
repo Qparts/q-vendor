@@ -135,7 +135,7 @@ public class VendorInternalApiV2 {
         try {
             WebApp webApp = getWebAppFromAuthHeader(header);
             String password = Helper.cypher((String) map.get("password"));
-            String email = (String) map.get("email");
+            String email = ((String) map.get("email")).trim().toLowerCase();
             String sql = "select b from VendorUser b where b.status = :value0 and b.email = :value1 and b.password = :value2";
             VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, 'A', email, password);
             if (vendorUser != null) {
@@ -213,6 +213,7 @@ public class VendorInternalApiV2 {
     public Response signupRequest(@HeaderParam("Authorization") String header, SignupRequest signupRequest) {
         try {
 //            WebApp webApp = getWebAppFromAuthHeader(header);
+            signupRequest.setEmail(signupRequest.getEmail().trim().toLowerCase());
             String cypher = Helper.cypher(signupRequest.getPassword());
             String sql = "select b from VendorUser b where b.email = :value0";
             VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, signupRequest.getEmail());
