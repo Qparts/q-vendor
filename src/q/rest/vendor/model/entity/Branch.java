@@ -18,6 +18,9 @@ public class Branch implements Serializable {
     @Column(name="id")
     private int id;
 
+    @Column(name="vendor_id")
+    private int vendorId;
+
     @Column(name="client_branch_id")
     private String clientBranchId;
 
@@ -127,25 +130,12 @@ public class Branch implements Serializable {
         this.note = note;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Branch branch = (Branch) o;
-        return id == branch.id &&
-                status == branch.status &&
-                createdBy == branch.createdBy &&
-                cityId == branch.cityId &&
-                countryId == branch.countryId &&
-                Objects.equals(clientBranchId, branch.clientBranchId) &&
-                Objects.equals(name, branch.name) &&
-                Objects.equals(nameAr, branch.nameAr) &&
-                Objects.equals(created, branch.created) &&
-                Objects.equals(note, branch.note);
+    public int getVendorId() {
+        return vendorId;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, clientBranchId, name, nameAr, status, created, createdBy, cityId, countryId, note);
+    public void setVendorId(int vendorId) {
+        this.vendorId = vendorId;
     }
+
 }

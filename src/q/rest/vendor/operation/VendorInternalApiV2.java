@@ -46,6 +46,7 @@ public class VendorInternalApiV2 {
             for(Vendor vendor : vendors){
                 addCategories(vendor);
                 addContacts(vendor);
+                addBranches(vendor);
             }
             return Response.status(200).entity(vendors).build();
         } catch (Exception ex) {
@@ -195,7 +196,10 @@ public class VendorInternalApiV2 {
             //create branch
             Branch b = new Branch();
             b.setCityId(sr.getCityId());
+            b.setVendorId(vendor.getId());
             b.setCountryId(sr.getCountryId());
+            b.setName("Main Branch");
+            b.setNameAr("الفرع الرئيسي");
             b.setCreated(new Date());
             b.setCreatedBy(0);
             b.setStatus('A');
@@ -378,6 +382,11 @@ public class VendorInternalApiV2 {
     private void addContacts(Vendor vendor){
         List<VendorContact> vendorContacts = dao.getCondition(VendorContact.class, "vendorId", vendor.getId());
         vendor.setVendorContacts(vendorContacts);
+    }
+
+    private void addBranches(Vendor vendor){
+        List<Branch> branches = dao.getCondition(Branch.class, "vendorId", vendor.getId());
+        vendor.setBranches(branches);
     }
 
 

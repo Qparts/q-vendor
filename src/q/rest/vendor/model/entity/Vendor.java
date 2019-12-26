@@ -43,6 +43,16 @@ public class Vendor implements Serializable {
     private List<VendorCategory> vendorCategories;
     @Transient
     private List<VendorContact> vendorContacts;
+    @Transient
+    private List<Branch> branches;
+
+    public List<Branch> getBranches() {
+        return branches;
+    }
+
+    public void setBranches(List<Branch> branches) {
+        this.branches = branches;
+    }
 
     public List<VendorContact> getVendorContacts() {
         return vendorContacts;
