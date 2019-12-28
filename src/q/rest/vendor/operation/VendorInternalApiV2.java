@@ -1,10 +1,7 @@
 package q.rest.vendor.operation;
 
 import q.rest.vendor.dao.DAO;
-import q.rest.vendor.filter.SecuredUser;
-import q.rest.vendor.filter.SecuredUserVendor;
-import q.rest.vendor.filter.SecuredVendor;
-import q.rest.vendor.filter.ValidApp;
+import q.rest.vendor.filter.*;
 import q.rest.vendor.helper.AppConstants;
 import q.rest.vendor.helper.Helper;
 import q.rest.vendor.model.contract.QvmSearchRequest;
@@ -282,15 +279,31 @@ public class VendorInternalApiV2 {
     }
 
     private void saveSearchKeyword(String query, Integer vendorUserId, Integer vendorId, WebApp webApp){
-        QvmSearchKeyword sk = new QvmSearchKeyword();
-        sk.setCreated(new Date());
-        sk.setQuery(query);
-        sk.setVendorUserId(vendorUserId);
-        sk.setVendorId(vendorId);
-        sk.setAppCode(webApp.getAppCode());
-        dao.persist(sk);
+        if(query.length() > 0) {
+            QvmSearchKeyword sk = new QvmSearchKeyword();
+            sk.setCreated(new Date());
+            sk.setQuery(query);
+            sk.setVendorUserId(vendorUserId);
+            sk.setVendorId(vendorId);
+            sk.setAppCode(webApp.getAppCode());
+            dao.persist(sk);
+        }
     }
 
+
+
+
+    @SecuredUser
+    @GET
+    @Path("latest-searches")
+    public Response getSearchKeywords(){
+        try{
+            List<QvmSearchKeyword> kwds = dao.getOrderByOriented(QvmSearchKeyword.class, "created", "desc", 50);
+            return Response.status(200).entity(kwds).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
 
     @SecuredVendor
@@ -303,7 +316,6 @@ public class VendorInternalApiV2 {
             Integer userId = ((Number) map.get("userId")).intValue();
             Integer vendorId = ((Number) map.get("vendorId")).intValue();
             saveSearchKeyword(query, userId, vendorId, webApp);
-
             QvmSearchRequest searchRequest = new QvmSearchRequest();
             searchRequest.setVendorCreds(new ArrayList<>());
             searchRequest.setQuery(query);

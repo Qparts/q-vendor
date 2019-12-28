@@ -65,6 +65,19 @@ public class DAO {
     }
 
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getOrderByMax(Class<T> klass, String orderColumn, int max) {
+        return (List<T>) em.createQuery("SELECT b FROM " + klass.getSimpleName() + " b order by " + orderColumn).setMaxResults(50).getResultList();
+    }
+
+
+
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getOrderByOriented(Class<T> klass, String orderColumn, String orientation, int max) {
+        return (List<T>) em.createQuery("SELECT b FROM " + klass.getSimpleName() + " b order by " + orderColumn + " " + orientation).setMaxResults(50).getResultList();
+    }
+
+
 
 
 
