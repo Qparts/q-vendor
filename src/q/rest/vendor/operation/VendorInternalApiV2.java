@@ -305,20 +305,42 @@ public class VendorInternalApiV2 {
         }
     }
 
-
-    @SecuredVendor
-    @Path("search")
+    @SecuredUserVendor
+    @Path("search-parts")
     @POST
-    public Response search(@HeaderParam("Authorization") String header, Map<String, Object> map){
+    public Response searchParts(@HeaderParam("Authorization") String header, Map<String,Object> map){
         try{
             WebApp webApp = getWebAppFromAuthHeader(header);
             String query = Helper.undecorate((String) map.get("query"));
             Integer userId = ((Number) map.get("userId")).intValue();
             Integer vendorId = ((Number) map.get("vendorId")).intValue();
             saveSearchKeyword(query, userId, vendorId, webApp);
+            Response r = postSecuredRequest(AppConstants.POST_QVM_SEARCH_PARTS, query, header);
+            if(r.getStatus() != 200) {
+                throw new Exception();
+            }
+            Object o = r.readEntity(Object.class);
+            return Response.status(200).entity(o).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @Path("search-availability")
+    @POST
+    public Response searchAvailabilitty(@HeaderParam("Authorization") String header, Map<String, Object> map){
+        try{
+            WebApp webApp = getWebAppFromAuthHeader(header);
+            String query = Helper.undecorate((String) map.get("query"));
+            Integer userId = ((Number) map.get("userId")).intValue();
+            Integer vendorId = ((Number) map.get("vendorId")).intValue();
+            Boolean attachProduct = ((Boolean) map.get("attachProduct")).booleanValue();
+            saveSearchKeyword(query, userId, vendorId, webApp);
             QvmSearchRequest searchRequest = new QvmSearchRequest();
             searchRequest.setVendorCreds(new ArrayList<>());
             searchRequest.setQuery(query);
+            searchRequest.setAttachProduct(attachProduct);
             List<Vendor> vendors = dao.getTwoConditions(Vendor.class, "integrationType", "status", 'I', 'A');
             for(Vendor vendor: vendors){
                 QvmVendorCredentials creds = new QvmVendorCredentials();
@@ -327,8 +349,7 @@ public class VendorInternalApiV2 {
                 creds.setVendorId(vendor.getId());
                 searchRequest.getVendorCreds().add(creds);
             }
-            Response r = postSecuredRequest(AppConstants.POST_QVM_SEARCH, searchRequest, header);
-            System.out.println(r.getStatus());
+            Response r = postSecuredRequest(AppConstants.POST_QVM_SEARCH_AVAILABILITY, searchRequest, header);
             if(r.getStatus() != 200) {
                 throw new Exception();
             }

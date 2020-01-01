@@ -11,6 +11,7 @@ public class AppConstants {
 
     public static final String CUSTOMER_MATCH_TOKEN = CUSTOMER_SERVICE + "match-token";
     public static final String USER_MATCH_TOKEN = USER_SERVICE + "match-token";
-    public static final String POST_QVM_SEARCH = PRODUCT_QVM_SERVICE + "search";
+    public static final String POST_QVM_SEARCH_AVAILABILITY = PRODUCT_QVM_SERVICE + "search-availability";
+    public static final String POST_QVM_SEARCH_PARTS = PRODUCT_QVM_SERVICE + "search-parts";
 
 }
