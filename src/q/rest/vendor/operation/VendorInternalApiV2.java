@@ -327,6 +327,53 @@ public class VendorInternalApiV2 {
     }
 
     @SecuredVendor
+    @Path("upload-requests")
+    @GET
+    public Response getUploadRequests(@HeaderParam("Authorization") String header){
+        try {
+            VendorUser vendorUser = getVendorUserFromHeader(header);
+            String sql = "select b from VendorUploadRequest b where b.vendorId = :value0 order by b.created desc";
+            List<VendorUploadRequest> list = dao.getJPQLParams(VendorUploadRequest.class, sql , vendorUser.getVendorId());
+            return Response.status(200).entity(list).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @Path("upload-request")
+    @PUT
+    public Response updateRequestUpload(VendorUploadRequest uploadRequest){
+        try{
+            uploadRequest.setCompleted(new Date());
+            dao.update(uploadRequest);
+            return Response.status(201).build();
+        }catch (Exception ee){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @Path("upload-request")
+    @POST
+    public Response requestUpload(VendorUploadRequest uploadRequest){
+        try{
+            Date date = Helper.addMinutes(new Date(), (60*12)*-1);
+            String jpql = "select b from VendorUploadRequest b where b.created > :value0";
+            List<VendorUploadRequest> check = dao.getJPQLParams(VendorUploadRequest.class, jpql, date);
+            if(check.isEmpty()){
+                dao.persist(uploadRequest);
+                return Response.status(200).entity(uploadRequest).build();
+            }
+            else{
+                return Response.status(403).build();
+            }
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
     @Path("search-availability")
     @POST
     public Response searchAvailabilitty(@HeaderParam("Authorization") String header, Map<String, Object> map){
@@ -422,6 +469,16 @@ public class VendorInternalApiV2 {
         vendor.setBranches(branches);
     }
 
+    private VendorUser getVendorUserFromHeader(String header) throws Exception{
+        try {
+            String[] values = header.split("&&");
+            String username = values[1].trim();
+            VendorUser vu = dao.find(VendorUser.class, Long.parseLong(username));
+            return vu;
+        } catch (Exception ex) {
+            return null;
+        }
+    }
 
     private WebApp getWebAppFromAuthHeader(String authHeader) throws Exception {
         String[] values = authHeader.split("&&");
