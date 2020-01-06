@@ -252,7 +252,7 @@ public class VendorInternalApiV2 {
                         Vendor vendor = vendors.get(ii);
                         int code = 200;
                         try {
-                            String endpoint = vendor.getEndpointAddress() + "check/";
+                            String endpoint = vendor.getHealthCheckAddress();
                             String header = "Bearer " + vendor.getIntegrationSecretCode();
                             Response r = getSecuredRequest(endpoint, header);
                             code = r.getStatus();

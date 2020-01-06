@@ -12,7 +12,6 @@ public class VendorUploadRequest {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "vnd_upload_request_id_seq_gen")
     @Column(name="id")
     private int id;
-
     @Column(name="vendor_id")
     private int vendorId;
     @Column(name="vendor_user_id")

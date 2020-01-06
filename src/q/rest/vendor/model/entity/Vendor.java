@@ -1,5 +1,7 @@
 package q.rest.vendor.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -37,8 +39,9 @@ public class Vendor implements Serializable {
     private Character integrationType;
     @Column(name="endpoint_address")
     private String endpointAddress;
-
-
+    @Column(name = "endpoint_health_check_address")
+    @JsonIgnore
+    private String healthCheckAddress;
     @Transient
     private List<VendorCategory> vendorCategories;
     @Transient
@@ -160,5 +163,13 @@ public class Vendor implements Serializable {
 
     public void setCityId(Integer cityId) {
         this.cityId = cityId;
+    }
+
+    public String getHealthCheckAddress() {
+        return healthCheckAddress;
+    }
+
+    public void setHealthCheckAddress(String healthCheckAddress) {
+        this.healthCheckAddress = healthCheckAddress;
     }
 }
