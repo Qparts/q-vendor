@@ -3,6 +3,7 @@ package q.rest.vendor.model.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "vnd_access_token")
@@ -106,58 +107,23 @@ public class AccessToken implements Serializable {
         this.status = status;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        AccessToken that = (AccessToken) o;
+        return id == that.id &&
+                vendorUserId == that.vendorUserId &&
+                status == that.status &&
+                Objects.equals(created, that.created) &&
+                Objects.equals(expire, that.expire) &&
+                Objects.equals(token, that.token) &&
+                Objects.equals(webApp, that.webApp);
+    }
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((created == null) ? 0 : created.hashCode());
-        result = prime * result + (int) (vendorUserId ^ (vendorUserId >>> 32));
-        result = prime * result + ((expire == null) ? 0 : expire.hashCode());
-        result = prime * result + (int) (id ^ (id >>> 32));
-        result = prime * result + status;
-        result = prime * result + ((token == null) ? 0 : token.hashCode());
-        result = prime * result + ((webApp == null) ? 0 : webApp.hashCode());
-        return result;
+        return Objects.hash(id, vendorUserId, created, expire, token, webApp, status);
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        AccessToken other = (AccessToken) obj;
-        if (created == null) {
-            if (other.created != null)
-                return false;
-        } else if (!created.equals(other.created))
-            return false;
-        if (vendorUserId != other.vendorUserId)
-            return false;
-        if (expire == null) {
-            if (other.expire != null)
-                return false;
-        } else if (!expire.equals(other.expire))
-            return false;
-        if (id != other.id)
-            return false;
-        if (status != other.status)
-            return false;
-        if (token == null) {
-            if (other.token != null)
-                return false;
-        } else if (!token.equals(other.token))
-            return false;
-        if (webApp == null) {
-            if (other.webApp != null)
-                return false;
-        } else if (!webApp.equals(other.webApp))
-            return false;
-        return true;
-    }
-
-
-
 }

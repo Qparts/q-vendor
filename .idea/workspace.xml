@@ -8,8 +8,8 @@
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorUploadRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorUploadRequest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/AccessToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/AccessToken.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -149,7 +149,9 @@
       <workItem from="1577965487443" duration="1979000" />
       <workItem from="1577969457436" duration="175000" />
       <workItem from="1578137416319" duration="2308000" />
-      <workItem from="1578292014743" duration="360000" />
+      <workItem from="1578292014743" duration="3188000" />
+      <workItem from="1578312002315" duration="1308000" />
+      <workItem from="1578313352970" duration="553000" />
     </task>
     <servers />
   </component>

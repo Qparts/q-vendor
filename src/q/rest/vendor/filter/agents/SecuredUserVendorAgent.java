@@ -27,7 +27,7 @@ import java.util.Map;
 @SecuredUserVendor
 @Provider
 @Priority(Priorities.AUTHENTICATION)
-public class SecuredAgent implements ContainerRequestFilter {
+public class SecuredUserVendorAgent implements ContainerRequestFilter {
 
     @EJB
     private DAO dao;

@@ -373,17 +373,19 @@ public class VendorInternalApiV2 {
         }
     }
 
-    @SecuredVendor
+    @SecuredUserVendor
     @Path("search-availability")
     @POST
     public Response searchAvailabilitty(@HeaderParam("Authorization") String header, Map<String, Object> map){
         try{
             WebApp webApp = getWebAppFromAuthHeader(header);
             String query = Helper.undecorate((String) map.get("query"));
-            Integer userId = ((Number) map.get("userId")).intValue();
-            Integer vendorId = ((Number) map.get("vendorId")).intValue();
-            Boolean attachProduct = ((Boolean) map.get("attachProduct")).booleanValue();
-            saveSearchKeyword(query, userId, vendorId, webApp);
+            int userId = ((Number) map.get("userId")).intValue();
+            int vendorId = ((Number) map.get("vendorId")).intValue();
+            boolean attachProduct = (Boolean) map.get("attachProduct");
+            if(vendorId > 0) {
+                saveSearchKeyword(query, userId, vendorId, webApp);
+            }
             QvmSearchRequest searchRequest = new QvmSearchRequest();
             searchRequest.setVendorCreds(new ArrayList<>());
             searchRequest.setQuery(query);
@@ -403,6 +405,7 @@ public class VendorInternalApiV2 {
             Object o = r.readEntity(Object.class);
             return Response.status(200).entity(o).build();
         }catch (Exception ex){
+//            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
@@ -425,14 +428,14 @@ public class VendorInternalApiV2 {
 
 
 
-    @SecuredUser
+    @SecuredVendor
     @POST
     @Path("/match-token")
     public Response matchToken(Map<String,String> map) {
         try {
             String appSecret = map.get("appSecret");
             String token = map.get("token");
-            Integer userId = Integer.parseInt(map.get("username"));
+            Long userId = Long.parseLong(map.get("username"));
             WebApp webApp = getWebAppFromSecret(appSecret);
 
             String sql = "select b from AccessToken b where b.vendorUserId = :value0 and b.webApp = :value1 " +
