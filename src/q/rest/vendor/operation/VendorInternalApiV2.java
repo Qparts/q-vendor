@@ -48,7 +48,6 @@ public class VendorInternalApiV2 {
                 addCategories(vendor);
                 addContacts(vendor);
                 addBranches(vendor);
-                addPolicies(vendor);
             }
             return Response.status(200).entity(vendors).build();
         } catch (Exception ex) {
@@ -594,11 +593,6 @@ public class VendorInternalApiV2 {
         vendor.setBranches(branches);
     }
 
-
-    private void addPolicies(Vendor vendor){
-        List<VendorPricePolicy> policies = dao.getCondition(VendorPricePolicy.class, "vendorId", vendor.getId());
-        vendor.setVendorPricePolicies(policies);
-    }
 
 
     private VendorUser getVendorUserFromHeader(String header) throws Exception {
