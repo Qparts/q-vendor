@@ -7,9 +7,19 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/PricePolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorPricePolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/Activity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/Role.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/RoleActivity.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUserRole.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/AccessToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/AccessToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredVendorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredVendorAgent.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorUserHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorUserHolder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/AccessToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/AccessToken.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUser.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -33,7 +43,7 @@
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547369486756" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/q/rest/vendor/filter/agents" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -48,11 +58,11 @@
       <recent name="q.rest.vendor.filter" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/filter/agents" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/model/contract" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/filter" />
       <recent name="$PROJECT_DIR$" />
-      <recent name="$PROJECT_DIR$/src/q/rest/vendor/model/entity" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -151,7 +161,10 @@
       <workItem from="1578137416319" duration="2308000" />
       <workItem from="1578292014743" duration="3188000" />
       <workItem from="1578312002315" duration="1308000" />
-      <workItem from="1578313352970" duration="553000" />
+      <workItem from="1578313352970" duration="757000" />
+      <workItem from="1578383828293" duration="1681000" />
+      <workItem from="1578442247666" duration="6951000" />
+      <workItem from="1578570266651" duration="3991000" />
     </task>
     <servers />
   </component>

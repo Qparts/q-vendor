@@ -48,6 +48,8 @@ public class Vendor implements Serializable {
     private List<VendorContact> vendorContacts;
     @Transient
     private List<Branch> branches;
+    @Transient
+    private List<VendorPricePolicy> vendorPricePolicies;
 
     public List<Branch> getBranches() {
         return branches;
@@ -171,5 +173,13 @@ public class Vendor implements Serializable {
 
     public void setHealthCheckAddress(String healthCheckAddress) {
         this.healthCheckAddress = healthCheckAddress;
+    }
+
+    public List<VendorPricePolicy> getVendorPricePolicies() {
+        return vendorPricePolicies;
+    }
+
+    public void setVendorPricePolicies(List<VendorPricePolicy> vendorPricePolicies) {
+        this.vendorPricePolicies = vendorPricePolicies;
     }
 }

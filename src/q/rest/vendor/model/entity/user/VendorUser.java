@@ -1,4 +1,4 @@
-package q.rest.vendor.model.entity;
+package q.rest.vendor.model.entity.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

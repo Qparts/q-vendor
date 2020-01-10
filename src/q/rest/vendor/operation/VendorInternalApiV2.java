@@ -9,6 +9,10 @@ import q.rest.vendor.model.contract.QvmVendorCredentials;
 import q.rest.vendor.model.contract.VendorHealthCheck;
 import q.rest.vendor.model.contract.VendorUserHolder;
 import q.rest.vendor.model.entity.*;
+import q.rest.vendor.model.entity.user.AccessToken;
+import q.rest.vendor.model.entity.user.Activity;
+import q.rest.vendor.model.entity.user.Role;
+import q.rest.vendor.model.entity.user.VendorUser;
 
 import javax.ejb.EJB;
 import javax.ws.rs.*;
@@ -44,6 +48,7 @@ public class VendorInternalApiV2 {
                 addCategories(vendor);
                 addContacts(vendor);
                 addBranches(vendor);
+                addPolicies(vendor);
             }
             return Response.status(200).entity(vendors).build();
         } catch (Exception ex) {
@@ -138,7 +143,11 @@ public class VendorInternalApiV2 {
             VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, 'A', email, password);
             if (vendorUser != null) {
                 String token = issueToken(vendorUser, webApp, 500);
+                String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
+                List<Role> roles = dao.getJPQLParams(Role.class, sql2, vendorUser);
                 VendorUserHolder holder = new VendorUserHolder();
+                holder.setRoles(roles);
+                holder.setActivities(getUserActivities(vendorUser));
                 holder.setVendorUser(vendorUser);
                 holder.setToken(token);
                 return Response.status(200).entity(holder).build();
@@ -150,6 +159,113 @@ public class VendorInternalApiV2 {
         }
     }
 
+
+    private List<Activity> getUserActivities(VendorUser user) {
+        String sql = "select * from vnd_activity a where a.id in ("
+                + "select ra.activity_id from vnd_role_activity ra where ra.role_id in ("
+                + "select ur.role_id from vnd_user_role ur where ur.vendor_user_id = " + user.getId() + ") ) order by a.id";
+        return dao.getNative(Activity.class, sql);
+    }
+
+    @SecuredVendor
+    @POST
+    @Path("price-policy")
+    public Response createNewVendorPolicy(PricePolicy pricePolicy){
+        try{
+            PricePolicy pp = dao.findTwoConditions(PricePolicy.class, "vendorId", "policyName", pricePolicy.getVendorId(), pricePolicy.getPolicyName());
+            if(pp != null){
+                return Response.status(409).build();
+            }
+            pricePolicy.setCreated(new Date());
+            dao.persist(pricePolicy);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredVendor
+    @GET
+    @Path("price-policy/vendor/{vendorId}/target/{targetId}")
+    public Response getPricePolicyFromVendorAndTargetIds(@PathParam(value = "vendorId") int vendorId, @PathParam(value = "targetId") int targetId){
+        try{
+            String sql = "select b from PricePolicy b where b.id in (" +
+                    "select c.pricePolicyId from VendorPricePolicy c where c.vendorId = :value0 and c.targetVendorId =:value1 )";
+            PricePolicy pricePolicy = dao.findJPQLParams(PricePolicy.class, sql, vendorId, targetId);
+            if(pricePolicy == null){
+                return Response.status(404).build();
+            }
+            return Response.ok().entity(pricePolicy).build();
+        }catch (Exception ex){
+            return Response.serverError().build();
+        }
+    }
+
+
+    @SecuredVendor
+    @DELETE
+    @Path("vendor-price-policy/target/{targetId}")
+    public Response deleteVendorPricePolicy(@HeaderParam("Authorization") String header, @PathParam(value = "targetId") int targetId){
+        try{
+            int vendorId = getVendorUserFromHeader(header).getVendorId();
+            VendorPricePolicy vpp = dao.findTwoConditions(VendorPricePolicy.class, "vendorId", "targetVendorId", vendorId, targetId);
+            dao.delete(vpp);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredVendor
+    @POST
+    @Path("vendor-price-policy")
+    public Response createVendorPricePolicy(VendorPricePolicy vpp){
+        try{
+            String sql = "select b from VendorPricePolicy b where b.vendorId =:value0 and b.targetVendorId =:value1";
+            VendorPricePolicy vpps = dao.findJPQLParams(VendorPricePolicy.class, sql , vpp.getVendorId(), vpp.getTargetVendorId());
+            if(vpps != null){
+                return Response.status(409).build();
+            }
+            vpp.setCreated(new Date());
+            dao.persist(vpp);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+
+    }
+
+    @SecuredVendor
+    @GET
+    @Path("vendor-price-policies")
+    public Response getVendorAppliedPricePolicies(@HeaderParam("Authorization") String header){
+        try{
+            int vendorId = getVendorUserFromHeader(header).getVendorId();
+            String sql = "select b from VendorPricePolicy b where b.vendorId =:value0 order by b.targetVendorId";
+            List<VendorPricePolicy> vpps = dao.getJPQLParams(VendorPricePolicy.class, sql , vendorId);
+            return Response.status(200).entity(vpps).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+
+    }
+
+
+    @SecuredVendor
+    @GET
+    @Path("price-policies")
+    public Response getVendorPricePolicies(@HeaderParam("Authorization") String header){
+        try{
+            int vendorId = getVendorUserFromHeader(header).getVendorId();
+            String sql = "select b from PricePolicy b where b.vendorId = :value0 order by b.created desc";
+            List<PricePolicy> policies = dao.getJPQLParams(PricePolicy.class, sql , vendorId);
+            return Response.status(200).entity(policies).build();
+        }
+        catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
 
 
@@ -201,6 +317,13 @@ public class VendorInternalApiV2 {
             b.setCreatedBy(0);
             b.setStatus('A');
             dao.persist(b);
+
+            //create role
+            Role role = dao.findCondition(Role.class, "name", "Viewer");
+            if(role!= null){
+                String sql2 = "insert into vnd_role_activity (vendor_user_id, role_id) values (" + u.getId() + ", " + role.getId() + ")";
+                dao.insertNative(sql2);
+            }
             return Response.status(200).build();
         }catch (Exception ex){
             return Response.status(500).build();
@@ -213,7 +336,6 @@ public class VendorInternalApiV2 {
     @Path("signup-request")
     public Response signupRequest(@HeaderParam("Authorization") String header, SignupRequest signupRequest) {
         try {
-//            WebApp webApp = getWebAppFromAuthHeader(header);
             signupRequest.setEmail(signupRequest.getEmail().trim().toLowerCase());
             String cypher = Helper.cypher(signupRequest.getPassword());
             String sql = "select b from VendorUser b where b.email = :value0";
@@ -472,7 +594,14 @@ public class VendorInternalApiV2 {
         vendor.setBranches(branches);
     }
 
-    private VendorUser getVendorUserFromHeader(String header) throws Exception{
+
+    private void addPolicies(Vendor vendor){
+        List<VendorPricePolicy> policies = dao.getCondition(VendorPricePolicy.class, "vendorId", vendor.getId());
+        vendor.setVendorPricePolicies(policies);
+    }
+
+
+    private VendorUser getVendorUserFromHeader(String header) throws Exception {
         try {
             String[] values = header.split("&&");
             String username = values[1].trim();

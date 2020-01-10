@@ -2,7 +2,7 @@ package q.rest.vendor.filter.agents;
 
 import q.rest.vendor.dao.DAO;
 import q.rest.vendor.filter.SecuredVendor;
-import q.rest.vendor.model.entity.AccessToken;
+import q.rest.vendor.model.entity.user.AccessToken;
 import q.rest.vendor.model.entity.WebApp;
 
 import javax.annotation.Priority;

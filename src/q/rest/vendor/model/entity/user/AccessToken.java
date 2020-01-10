@@ -1,4 +1,6 @@
-package q.rest.vendor.model.entity;
+package q.rest.vendor.model.entity.user;
+
+import q.rest.vendor.model.entity.WebApp;
 
 import javax.persistence.*;
 import java.io.Serializable;
