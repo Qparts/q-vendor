@@ -320,7 +320,7 @@ public class VendorInternalApiV2 {
             //create role
             Role role = dao.findCondition(Role.class, "name", "Viewer");
             if(role!= null){
-                String sql2 = "insert into vnd_role_activity (vendor_user_id, role_id) values (" + u.getId() + ", " + role.getId() + ")";
+                String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + u.getId() + ", " + role.getId() + ")";
                 dao.insertNative(sql2);
             }
             return Response.status(200).build();
