@@ -281,52 +281,64 @@ public class VendorInternalApiV2 {
             sr.setStatus('A');//approved
             dao.update(sr);
 
-            //create vendor
-            Vendor vendor = new Vendor();
-            vendor.setCreated(new Date());
-            vendor.setCreatedBy(0);
-            vendor.setIntegrationType('V');
-            vendor.setName(sr.getVendorName());
-            vendor.setNameAr(sr.getVendorNameAr());
-            vendor.setNotes(sr.getNotes());
-            vendor.setStatus('A');
-            dao.persist(vendor);
-
-            //create vendor user
-            VendorUser u = new VendorUser();
-            u.setFirstName(sr.getFirstName());
-            u.setLastName(sr.getLastName());
-            u.setPassword(sr.getPassword());
-            u.setStatus('A');
-            u.setVendorId(vendor.getId());
-            u.setEmail(sr.getEmail());
-            u.setMobile(sr.getMobile());
-            u.setCreated(new Date());
-            u.setCreatedBy(0);
-            dao.persist(u);
-
-            //create branch
-            Branch b = new Branch();
-            b.setCityId(sr.getCityId());
-            b.setVendorId(vendor.getId());
-            b.setCountryId(sr.getCountryId());
-            b.setName("Main Branch");
-            b.setNameAr("الفرع الرئيسي");
-            b.setCreated(new Date());
-            b.setCreatedBy(0);
-            b.setStatus('A');
-            dao.persist(b);
+            Vendor vendor = createVendor(sr);
+            VendorUser vendorUser = createVendorUser(sr, vendor);
+            createBranch(sr, vendor);
 
             //create role
             Role role = dao.findCondition(Role.class, "name", "Viewer");
             if(role!= null){
-                String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + u.getId() + ", " + role.getId() + ")";
+                String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + vendorUser.getId() + ", " + role.getId() + ")";
                 dao.insertNative(sql2);
             }
             return Response.status(200).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }
+    }
+
+    private void createBranch(SignupRequest sr, Vendor vendor){
+        //create branch
+        Branch b = new Branch();
+        b.setCityId(sr.getCityId());
+        b.setVendorId(vendor.getId());
+        b.setCountryId(sr.getCountryId());
+        b.setName("Main Branch");
+        b.setNameAr("الفرع الرئيسي");
+        b.setCreated(new Date());
+        b.setCreatedBy(0);
+        b.setStatus('A');
+        dao.persist(b);
+    }
+
+    private Vendor createVendor(SignupRequest sr){
+        //create vendor
+        Vendor vendor = new Vendor();
+        vendor.setCreated(new Date());
+        vendor.setCreatedBy(0);
+        vendor.setIntegrationType('V');
+        vendor.setName(sr.getVendorName());
+        vendor.setNameAr(sr.getVendorNameAr());
+        vendor.setNotes(sr.getNotes());
+        vendor.setStatus('A');
+        dao.persist(vendor);
+        return vendor;
+    }
+
+    private VendorUser createVendorUser(SignupRequest sr, Vendor vendor){
+        //create vendor user
+        VendorUser u = new VendorUser();
+        u.setFirstName(sr.getFirstName());
+        u.setLastName(sr.getLastName());
+        u.setPassword(sr.getPassword());
+        u.setStatus('A');
+        u.setVendorId(vendor.getId());
+        u.setEmail(sr.getEmail());
+        u.setMobile(sr.getMobile());
+        u.setCreated(new Date());
+        u.setCreatedBy(0);
+        dao.persist(u);
+        return u;
     }
 
 
