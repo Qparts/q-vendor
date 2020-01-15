@@ -455,11 +455,7 @@ public class VendorInternalApiV2 {
     @POST
     public Response searchParts(@HeaderParam("Authorization") String header, Map<String,Object> map){
         try{
-            WebApp webApp = getWebAppFromAuthHeader(header);
             String query = Helper.undecorate((String) map.get("query"));
-            Integer userId = ((Number) map.get("userId")).intValue();
-            Integer vendorId = ((Number) map.get("vendorId")).intValue();
-            saveSearchKeyword(query, userId, vendorId, webApp);
             Response r = postSecuredRequest(AppConstants.POST_QVM_SEARCH_PARTS, query, header);
             if(r.getStatus() != 200) {
                 throw new Exception();
