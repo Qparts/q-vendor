@@ -73,8 +73,12 @@ public class DAO {
 
 
     @SuppressWarnings("unchecked")
+    public <T> List<T> getOrderByOriented(Class<T> klass, String orderColumn, String orientation) {
+        return (List<T>) em.createQuery("SELECT b FROM " + klass.getSimpleName() + " b order by " + orderColumn + " " + orientation).getResultList();
+    }
+
     public <T> List<T> getOrderByOriented(Class<T> klass, String orderColumn, String orientation, int max) {
-        return (List<T>) em.createQuery("SELECT b FROM " + klass.getSimpleName() + " b order by " + orderColumn + " " + orientation).setMaxResults(50).getResultList();
+        return (List<T>) em.createQuery("SELECT b FROM " + klass.getSimpleName() + " b order by " + orderColumn + " " + orientation).setMaxResults(max).getResultList();
     }
 
 

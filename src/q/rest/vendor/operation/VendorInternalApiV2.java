@@ -70,6 +70,18 @@ public class VendorInternalApiV2 {
     }
 
     @SecuredUser
+    @GET
+    @Path("vendor-uploads")
+    public Response getVendorUploads(){
+       try{
+            List<VendorUploadRequest> uploads = dao.getOrderByOriented(VendorUploadRequest.class, "created", "desc");
+            return Response.status(200).entity(uploads).build();
+       }catch (Exception ex){
+           return Response.status(500).build();
+       }
+    }
+
+    @SecuredUser
     @POST
     @Path("vendor")
     public Response createVendor(Vendor vendor){
