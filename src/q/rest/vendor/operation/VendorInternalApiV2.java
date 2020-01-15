@@ -503,7 +503,7 @@ public class VendorInternalApiV2 {
     @POST
     public Response requestUpload(VendorUploadRequest uploadRequest){
         try{
-            Date date = Helper.addMinutes(new Date(), (60*12)*-1);
+            Date date = Helper.addMinutes(new Date(), 10*-1);
             String jpql = "select b from VendorUploadRequest b where b.created > :value0";
             List<VendorUploadRequest> check = dao.getJPQLParams(VendorUploadRequest.class, jpql, date);
             if(check.isEmpty()){
