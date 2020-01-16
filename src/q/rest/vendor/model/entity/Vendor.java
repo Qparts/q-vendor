@@ -48,6 +48,16 @@ public class Vendor implements Serializable {
     private List<VendorContact> vendorContacts;
     @Transient
     private List<Branch> branches;
+    @Transient
+    private List<Subscription> subscriptions;
+
+    public List<Subscription> getSubscriptions() {
+        return subscriptions;
+    }
+
+    public void setSubscriptions(List<Subscription> subscriptions) {
+        this.subscriptions = subscriptions;
+    }
 
     public List<Branch> getBranches() {
         return branches;

@@ -4,10 +4,7 @@ import q.rest.vendor.dao.DAO;
 import q.rest.vendor.filter.*;
 import q.rest.vendor.helper.AppConstants;
 import q.rest.vendor.helper.Helper;
-import q.rest.vendor.model.contract.QvmSearchRequest;
-import q.rest.vendor.model.contract.QvmVendorCredentials;
-import q.rest.vendor.model.contract.VendorHealthCheck;
-import q.rest.vendor.model.contract.VendorUserHolder;
+import q.rest.vendor.model.contract.*;
 import q.rest.vendor.model.entity.*;
 import q.rest.vendor.model.entity.user.AccessToken;
 import q.rest.vendor.model.entity.user.Activity;
@@ -48,10 +45,10 @@ public class VendorInternalApiV2 {
                 addCategories(vendor);
                 addContacts(vendor);
                 addBranches(vendor);
+                addSubscription(vendor);
             }
             return Response.status(200).entity(vendors).build();
         } catch (Exception ex) {
-            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
@@ -283,30 +280,63 @@ public class VendorInternalApiV2 {
     @SecuredUser
     @PUT
     @Path("approve-vendor")
-    public Response approveVendor(@HeaderParam("Authorization") String header, SignupRequest sr){
+    public Response approveVendor(@HeaderParam("Authorization") String header, SignupHolder holder){
         try{
             String sql = "select b from SignupRequest b where b.id = :value0 and b.status = :value1";
-            SignupRequest check = dao.findJPQLParams(SignupRequest.class, sql, sr.getId(), 'N');//new
+            SignupRequest check = dao.findJPQLParams(SignupRequest.class, sql, holder.getSignupRequest().getId(), 'N');//new
             if(check == null){
                 return Response.status(429).build();
             }
-            sr.setStatus('A');//approved
-            dao.update(sr);
-
-            Vendor vendor = createVendor(sr);
-            VendorUser vendorUser = createVendorUser(sr, vendor);
-            createBranch(sr, vendor);
-
-            //create role
-            Role role = dao.findCondition(Role.class, "name", "Viewer");
-            if(role!= null){
-                String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + vendorUser.getId() + ", " + role.getId() + ")";
-                dao.insertNative(sql2);
+            holder.getSignupRequest().setStatus('A');//approved
+            dao.update(holder.getSignupRequest());
+            VendorUser vendorUser= null;
+            if(holder.isNewVendor()){
+                Vendor vendor = createVendor(holder.getSignupRequest());
+                vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
+                createBranch(holder.getSignupRequest(), vendor);
+                createSubscription(vendor, vendorUser, holder.getSubscription());
+            } else{
+                Vendor vendor = dao.find(Vendor.class, holder.getExistingVendorId());
+                if(vendor.getIntegrationType() == null){
+                    vendor.setIntegrationType('V');
+                    dao.update(vendor);
+                    vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
+                    createSubscription(vendor, vendorUser, holder.getSubscription());
+                }
+                else{
+                    vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
+                }
+                Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "name", vendor.getId(), "Main Branch");
+                if(branch == null){
+                    createBranch(holder.getSignupRequest(), vendor);
+                }
             }
+            createRole(vendorUser, holder.getSignupRequest().getVendorType());
             return Response.status(200).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }
+    }
+
+    private void createRole(VendorUser vendorUser, char vendorType){
+        Role role = null;
+        if(vendorType == 'V') {
+            role = dao.findCondition(Role.class, "name", "Viewer");
+        }else if(vendorType == 'U'){
+            role = dao.findCondition(Role.class, "name", "Stock Owner");
+        }
+        if(role!= null){
+            String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + vendorUser.getId() + ", " + role.getId() + ")";
+            dao.insertNative(sql2);
+        }
+    }
+
+    private void createSubscription(Vendor vendor, VendorUser vendorUser, Subscription subscription){
+        subscription.setStatus('A');
+        subscription.setVendorId(vendor.getId());
+        subscription.setVendorUserId(vendorUser.getId());
+        dao.persist(subscription);
+
     }
 
     private void createBranch(SignupRequest sr, Vendor vendor){
@@ -611,6 +641,12 @@ public class VendorInternalApiV2 {
     private void addBranches(Vendor vendor){
         List<Branch> branches = dao.getCondition(Branch.class, "vendorId", vendor.getId());
         vendor.setBranches(branches);
+    }
+
+    private void addSubscription(Vendor vendor){
+        String sql = "select b from Subscription b where b.vendorId = :value0 order by expire desc";
+        List<Subscription> subscriptions = dao.getJPQLParams(Subscription.class, sql, vendor.getId());
+        vendor.setSubscriptions(subscriptions);
     }
 
 
