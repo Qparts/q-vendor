@@ -15,6 +15,7 @@ import q.rest.vendor.model.entity.user.Role;
 import q.rest.vendor.model.entity.user.VendorUser;
 
 import javax.ejb.EJB;
+import javax.naming.spi.ResolveResult;
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
@@ -96,6 +97,23 @@ public class VendorInternalApiV2 {
         }
     }
 
+
+    @SecuredUser
+    @GET
+    @Path("vendor/{vendorId}")
+    public Response getVendor(@PathParam(value = "vendorId") int vendorId) {
+        try {
+            Vendor vendor = dao.find(Vendor.class, vendorId);
+            addCategories(vendor);
+            addContacts(vendor);
+            addBranches(vendor);
+            addSubscription(vendor);
+            return Response.status(200).entity(vendor).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUser
     @GET
     @Path("couriers")
@@ -119,6 +137,24 @@ public class VendorInternalApiV2 {
        }catch (Exception ex){
            return Response.status(500).build();
        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("branch")
+    public Response createBranch(Branch branch){
+        try{
+            String sql = "select b from Branch b where b.vendorId =:value0 and b.name = :value1";
+            List<Branch> branches = dao.getJPQLParams(Branch.class, sql , branch.getVendorId(), branch.getName());
+            if(!branches.isEmpty()){
+                return Response.status(409).build();
+            }
+            branch.setCreated(new Date());
+            dao.persist(branch);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
     }
 
     @SecuredUser
@@ -179,6 +215,33 @@ public class VendorInternalApiV2 {
         }
     }
 
+    @SecuredUser
+    @GET
+    @Path("vendor-users/{vendorId}")
+    public Response getVendorUsers(@PathParam(value = "vendorId") int vendorId){
+        try{
+            String jpql = "select b from VendorUser b where b.vendorId = :value0 order by b.id";
+            List<VendorUser> vendorUsers = dao.getJPQLParams(VendorUser.class, jpql, vendorId);
+            List<VendorUserHolder> holders = new ArrayList<>();
+            for(VendorUser vu : vendorUsers){
+                String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
+                List<Role> roles = dao.getJPQLParams(Role.class, sql2, vu);
+                VendorUserHolder holder = new VendorUserHolder();
+                holder.setRoles(roles);
+                holder.setActivities(getUserActivities(vu));
+                holder.setVendorUser(vu);
+                AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vu.getId(), 'A');
+                if(at != null) {
+                    holder.setLastLogin(at.getCreated());
+                }
+                holders.add(holder);
+            }
+            return Response.status(200).entity(holders).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
 
 
 
@@ -193,14 +256,19 @@ public class VendorInternalApiV2 {
             String sql = "select b from VendorUser b where b.status = :value0 and b.email = :value1 and b.password = :value2";
             VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, 'A', email, password);
             if (vendorUser != null) {
+                VendorUserHolder holder = new VendorUserHolder();
+                AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vendorUser.getId(), 'A');
+                if(at != null) {
+                    holder.setLastLogin(at.getCreated());
+                }
                 String token = issueToken(vendorUser, webApp, 500);
                 String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
                 List<Role> roles = dao.getJPQLParams(Role.class, sql2, vendorUser);
-                VendorUserHolder holder = new VendorUserHolder();
                 holder.setRoles(roles);
                 holder.setActivities(getUserActivities(vendorUser));
                 holder.setVendorUser(vendorUser);
                 holder.setToken(token);
+
                 return Response.status(200).entity(holder).build();
             } else {
                 throw new Exception();

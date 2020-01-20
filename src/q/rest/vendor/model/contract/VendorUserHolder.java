@@ -6,6 +6,7 @@ import q.rest.vendor.model.entity.user.Role;
 import q.rest.vendor.model.entity.user.VendorUser;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class VendorUserHolder implements Serializable{
@@ -15,6 +16,15 @@ public class VendorUserHolder implements Serializable{
 	private List<Role> roles;
 	private List<Activity> activities;
 	private String token;
+	private Date lastLogin;
+
+	public Date getLastLogin() {
+		return lastLogin;
+	}
+
+	public void setLastLogin(Date lastLogin) {
+		this.lastLogin = lastLogin;
+	}
 
 	public List<Role> getRoles() {
 		return roles;
