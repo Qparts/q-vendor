@@ -1,5 +1,8 @@
 package q.rest.vendor.operation;
 
+import org.apache.velocity.Template;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import q.rest.vendor.dao.DAO;
 import q.rest.vendor.filter.*;
 import q.rest.vendor.helper.AppConstants;
@@ -12,17 +15,17 @@ import q.rest.vendor.model.entity.user.Role;
 import q.rest.vendor.model.entity.user.VendorUser;
 
 import javax.ejb.EJB;
+import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.io.StringWriter;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -34,6 +37,46 @@ public class VendorInternalApiV2 {
 
     @EJB
     private DAO dao;
+
+
+    @Context
+    private ServletContext context;
+
+    @EJB
+    private AsyncService async;
+
+
+
+    @GET
+    @Path("test")
+    @Produces(MediaType.TEXT_HTML)
+    public Response testQuotationReadyHtml(){
+        Map<String,Object> vmap = new HashMap<>();
+        vmap.put("firstName", "Fareed");
+        vmap.put("quotationLink", "http://somelink.com");
+        vmap.put("quotationId", 50001);
+        String body = this.getHtmlTemplate(AppConstants.REGISTRATION_COMPLETE_EMAIL_TEMPLATE, vmap);
+        return Response.status(200).entity(body).build();
+    }
+
+
+
+
+    public String getHtmlTemplate(String templateName, Map<String,Object> map){
+        Properties p = new Properties();
+        p.setProperty("resource.loader", "webapp");
+        p.setProperty("webapp.resource.loader.class", "org.apache.velocity.tools.view.WebappResourceLoader");
+        p.setProperty("webapp.resource.loader.path", "/WEB-INF/velocity/");
+        VelocityEngine engine = new VelocityEngine(p);
+        engine.setApplicationAttribute("javax.servlet.ServletContext", context);
+        engine.init();
+        Template template = engine.getTemplate(templateName);
+        VelocityContext velocityContext = new VelocityContext();
+        map.forEach((k,v) -> velocityContext.put(k,v));
+        StringWriter writer = new StringWriter();
+        template.merge(velocityContext, writer);
+        return writer.toString();
+    }
 
     @SecuredUserVendor
     @GET
@@ -404,8 +447,14 @@ public class VendorInternalApiV2 {
             signupRequest.setPassword(cypher);
             signupRequest.setCreated(new Date());
             dao.persist(signupRequest);
+            Map<String,Object> map = new HashMap<>();
+            map.put("firstName", signupRequest.getFirstName());
+            String subject = "Thank you for signing up application- شكرا لطلب انتضمامكم";
+            String body = this.getHtmlTemplate(AppConstants.REGISTRATION_COMPLETE_EMAIL_TEMPLATE, map);
+            async.sendHtmlEmail(signupRequest.getEmail(), subject, body);
             return Response.status(201).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
@@ -492,53 +541,6 @@ public class VendorInternalApiV2 {
             }
             Object o = r.readEntity(Object.class);
             return Response.status(200).entity(o).build();
-        }catch (Exception ex){
-            return Response.status(500).build();
-        }
-    }
-
-    @SecuredVendor
-    @Path("upload-requests")
-    @GET
-    public Response getUploadRequests(@HeaderParam("Authorization") String header){
-        try {
-            VendorUser vendorUser = getVendorUserFromHeader(header);
-            String sql = "select b from VendorUploadRequest b where b.vendorId = :value0 order by b.created desc";
-            List<VendorUploadRequest> list = dao.getJPQLParams(VendorUploadRequest.class, sql , vendorUser.getVendorId());
-            return Response.status(200).entity(list).build();
-        }catch (Exception ex){
-            return Response.status(500).build();
-        }
-    }
-
-    @SecuredVendor
-    @Path("upload-request")
-    @PUT
-    public Response updateRequestUpload(VendorUploadRequest uploadRequest){
-        try{
-            uploadRequest.setCompleted(new Date());
-            dao.update(uploadRequest);
-            return Response.status(201).build();
-        }catch (Exception ee){
-            return Response.status(500).build();
-        }
-    }
-
-    @SecuredVendor
-    @Path("upload-request")
-    @POST
-    public Response requestUpload(VendorUploadRequest uploadRequest){
-        try{
-            Date date = Helper.addMinutes(new Date(), 10*-1);
-            String jpql = "select b from VendorUploadRequest b where b.created > :value0";
-            List<VendorUploadRequest> check = dao.getJPQLParams(VendorUploadRequest.class, jpql, date);
-            if(check.isEmpty()){
-                dao.persist(uploadRequest);
-                return Response.status(200).entity(uploadRequest).build();
-            }
-            else{
-                return Response.status(403).build();
-            }
         }catch (Exception ex){
             return Response.status(500).build();
         }

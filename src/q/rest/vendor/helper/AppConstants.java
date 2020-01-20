@@ -2,6 +2,10 @@ package q.rest.vendor.helper;
 
 public class AppConstants {
 
+    public final static String EMAIL_ADDRESS = "no-reply@qetaa.com";
+    public final static String PASSWORD = "qetaa3!Cs@";
+    public final static String SMTP_SERVER = "smtp.zoho.com";
+
     private final static String WEBSITE_BASE_URL = "http://qtest.fareed9.com/";
     private static final String USER_SERVICE = "http://localhost:8081/service-q-user/rest/internal/api/v2/";
     private static final String IMAGE_SERVICE = "http://localhost:8081/q-images/rest/internal/api/v2/";
@@ -13,5 +17,6 @@ public class AppConstants {
     public static final String USER_MATCH_TOKEN = USER_SERVICE + "match-token";
     public static final String POST_QVM_SEARCH_AVAILABILITY = PRODUCT_QVM_SERVICE + "search-availability";
     public static final String POST_QVM_SEARCH_PARTS = PRODUCT_QVM_SERVICE + "search-parts";
+    public final static String REGISTRATION_COMPLETE_EMAIL_TEMPLATE = "email/registration-complete.vm";
 
 }

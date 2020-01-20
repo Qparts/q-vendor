@@ -7,10 +7,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/SignupHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Subscription.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/AsyncService.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/commons-lang3-3.8.1.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/velocity-engine-core-2.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/velocity-tools-generic-3.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/lib/velocity-tools-view-3.0.jar" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/registration-complete.vm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/q-rest-vendor.iml" beforeDir="false" afterPath="$PROJECT_DIR$/q-rest-vendor.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -34,7 +39,7 @@
     <property name="WebServerToolWindowFactoryState" value="true" />
     <property name="aspect.path.notification.shown" value="true" />
     <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1547369486756" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/web/WEB-INF/lib" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="Modules" />
@@ -49,11 +54,11 @@
       <recent name="q.rest.vendor.filter" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/web/WEB-INF/lib" />
+      <recent name="$PROJECT_DIR$/web/WEB-INF" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/filter/agents" />
       <recent name="$PROJECT_DIR$/src/q/rest/vendor/model/contract" />
-      <recent name="$PROJECT_DIR$/src/q/rest/vendor/filter" />
-      <recent name="$PROJECT_DIR$" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -159,7 +164,7 @@
       <workItem from="1578931436050" duration="1874000" />
       <workItem from="1579098028865" duration="982000" />
       <workItem from="1579124789984" duration="842000" />
-      <workItem from="1579126564672" duration="4856000" />
+      <workItem from="1579126564672" duration="11691000" />
     </task>
     <servers />
   </component>
@@ -178,81 +183,5 @@
         </entry>
       </map>
     </option>
-  </component>
-  <component name="masterDetails">
-    <states>
-      <state key="ArtifactsStructureConfigurable.UI">
-        <settings>
-          <artifact-editor />
-          <last-edited>q-rest-vendor</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2048611" />
-                <option value="0.5" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="FacetStructureConfigurable.UI">
-        <settings>
-          <last-edited>JPA</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2048611" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="GlobalLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="JdkListConfigurable.UI">
-        <settings>
-          <last-edited>11</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ModuleStructureConfigurable.UI">
-        <settings>
-          <last-edited>q-rest-vendor</last-edited>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2048611" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-      <state key="ProjectLibrariesConfigurable.UI">
-        <settings>
-          <splitter-proportions>
-            <option name="proportions">
-              <list>
-                <option value="0.2048611" />
-              </list>
-            </option>
-          </splitter-proportions>
-        </settings>
-      </state>
-    </states>
   </component>
 </project>
