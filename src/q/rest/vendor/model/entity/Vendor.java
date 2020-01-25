@@ -1,6 +1,8 @@
 package q.rest.vendor.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import q.rest.vendor.model.entity.plan.PlanReferral;
+import q.rest.vendor.model.entity.plan.PlanSubscription;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -49,13 +51,23 @@ public class Vendor implements Serializable {
     @Transient
     private List<Branch> branches;
     @Transient
-    private List<Subscription> subscriptions;
+    private List<PlanSubscription> subscriptions;
+    @Transient
+    private List<PlanReferral> referrals;
 
-    public List<Subscription> getSubscriptions() {
+    public List<PlanReferral> getReferrals() {
+        return referrals;
+    }
+
+    public void setReferrals(List<PlanReferral> referrals) {
+        this.referrals = referrals;
+    }
+
+    public List<PlanSubscription> getSubscriptions() {
         return subscriptions;
     }
 
-    public void setSubscriptions(List<Subscription> subscriptions) {
+    public void setSubscriptions(List<PlanSubscription> subscriptions) {
         this.subscriptions = subscriptions;
     }
 

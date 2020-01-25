@@ -1,15 +1,24 @@
 package q.rest.vendor.model.contract;
 
 import q.rest.vendor.model.entity.SignupRequest;
-import q.rest.vendor.model.entity.Subscription;
 
 import java.io.Serializable;
 
 public class SignupHolder implements Serializable {
     private SignupRequest signupRequest;
-    private Subscription subscription;
+    private int planId;
+    private int optionId;
     private int existingVendorId;
     private boolean newVendor;
+    private int createdBy;
+
+    public int getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(int createdBy) {
+        this.createdBy = createdBy;
+    }
 
     public SignupRequest getSignupRequest() {
         return signupRequest;
@@ -19,14 +28,21 @@ public class SignupHolder implements Serializable {
         this.signupRequest = signupRequest;
     }
 
-    public Subscription getSubscription() {
-        return subscription;
+    public int getPlanId() {
+        return planId;
     }
 
-    public void setSubscription(Subscription subscription) {
-        this.subscription = subscription;
+    public void setPlanId(int planId) {
+        this.planId = planId;
     }
 
+    public int getOptionId() {
+        return optionId;
+    }
+
+    public void setOptionId(int optionId) {
+        this.optionId = optionId;
+    }
 
     public int getExistingVendorId() {
         return existingVendorId;

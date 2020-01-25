@@ -30,6 +30,17 @@ public class VendorPricePolicy implements Serializable {
 	@Column(name="created_by")
 	private int createdBy;
 
+	@Transient
+	private PricePolicy pricePolicy;
+
+	public PricePolicy getPricePolicy() {
+		return pricePolicy;
+	}
+
+	public void setPricePolicy(PricePolicy pricePolicy) {
+		this.pricePolicy = pricePolicy;
+	}
+
 	public int getVendorId() {
 		return vendorId;
 	}

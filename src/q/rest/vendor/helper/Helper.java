@@ -10,7 +10,26 @@ import java.util.Random;
 
 public class Helper {
 
+    private static final String CHAR_LOWER = "abcdefghijklmnopqrstuvwxyz";
+    private static final String CHAR_UPPER = CHAR_LOWER.toUpperCase();
+    private static final String NUMBER = "0123456789";
 
+    private static final String SALT = CHAR_LOWER + CHAR_UPPER + NUMBER;
+
+    public static String getRandomString(int length) {
+        SecureRandom random = new SecureRandom();
+        if (length < 1) throw new IllegalArgumentException();
+
+        StringBuilder sb = new StringBuilder(length);
+        for (int i = 0; i < length; i++) {
+
+            // 0-62 (exclusive), random returns 0-61
+            int rndCharAt = random.nextInt(SALT.length());
+            char rndChar = SALT.charAt(rndCharAt);
+            sb.append(rndChar);
+        }
+        return sb.toString();
+    }
 
     public static String undecorate(String string) {
         return string.replaceAll("[^A-Za-z0-9]", "").toUpperCase();
@@ -20,6 +39,13 @@ public class Helper {
         SecureRandom random = new SecureRandom();
         return new BigInteger(130, random).toString(32);
     }
+
+    public static String getSecuredRandom(int length) {
+        SecureRandom random = new SecureRandom();
+        return new BigInteger(130, random).toString(length);
+    }
+
+
     public static String cypher(String text) throws NoSuchAlgorithmException {
         String shaval = "";
         MessageDigest algorithm = MessageDigest.getInstance("SHA-256");

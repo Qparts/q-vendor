@@ -32,10 +32,6 @@ public class VendorUserRole implements Serializable {
 		return vendorUser;
 	}
 
-	public void setView(VendorUser user) {
-		this.vendorUser =vendorUser;
-	}
-
     public void setVendorUser(VendorUser vendorUser) {
         this.vendorUser = vendorUser;
     }

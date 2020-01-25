@@ -30,6 +30,13 @@ public class DAO {
         return (List<T>) q.getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getJPQLParamsMax(Class<T> klass, String jpql, int max, Object ... values){
+        Query q = em.createQuery(jpql).setMaxResults(max);
+        setVarargs(q, values);
+        return (List<T>) q.getResultList();
+    }
+
 
     private void setParameter(Query q, String name, Object val) {
         if (val instanceof Date) {

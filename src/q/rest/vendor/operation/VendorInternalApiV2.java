@@ -9,13 +9,10 @@ import q.rest.vendor.helper.AppConstants;
 import q.rest.vendor.helper.Helper;
 import q.rest.vendor.model.contract.*;
 import q.rest.vendor.model.entity.*;
-import q.rest.vendor.model.entity.user.AccessToken;
-import q.rest.vendor.model.entity.user.Activity;
-import q.rest.vendor.model.entity.user.Role;
-import q.rest.vendor.model.entity.user.VendorUser;
+import q.rest.vendor.model.entity.plan.*;
+import q.rest.vendor.model.entity.user.*;
 
 import javax.ejb.EJB;
-import javax.naming.spi.ResolveResult;
 import javax.servlet.ServletContext;
 import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
@@ -62,6 +59,20 @@ public class VendorInternalApiV2 {
 
 
 
+    @GET
+    @Path("test2")
+    @Produces(MediaType.TEXT_HTML)
+    public Response test2QuotationReadyHtml(){
+        Map<String,Object> vmap = new HashMap<>();
+        vmap.put("firstName", "Fareed");
+        vmap.put("invitationCode", "AS6s1ax");
+        vmap.put("invitations", 10);
+        String body = this.getHtmlTemplate(AppConstants.VENDOR_APPROVED_EMAIL_TEMPLATE, vmap);
+        return Response.status(200).entity(body).build();
+    }
+
+
+
 
     public String getHtmlTemplate(String templateName, Map<String,Object> map){
         Properties p = new Properties();
@@ -86,12 +97,38 @@ public class VendorInternalApiV2 {
         try {
             List<Vendor> vendors = dao.getOrderBy(Vendor.class, "id");
             for(Vendor vendor : vendors){
-                addCategories(vendor);
-                addContacts(vendor);
-                addBranches(vendor);
-                addSubscription(vendor);
+                vendor.setVendorCategories(getCategories(vendor.getId()));
+                vendor.setVendorContacts(getContacts(vendor.getId()));
+                vendor.setBranches(getVendorBranches(vendor.getId()));
+                vendor.setSubscriptions(getSubscription(vendor.getId()));
+                vendor.setReferrals(getReferrals(vendor.getId()));
             }
             return Response.status(200).entity(vendors).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUserVendor
+    @GET
+    @Path("vendors/detailed")
+    public Response getAllVendors2(){
+        try {
+            List<Vendor> vendors = dao.getOrderBy(Vendor.class, "id");
+            List<VendorHolder> holders = new ArrayList<>();
+            for(Vendor vendor : vendors){
+                VendorHolder holder = new VendorHolder();
+                holder.setVendor(vendor);
+                holder.setAccessTokens(getAccessTokens(vendor.getId()));
+                holder.setBranches(getVendorBranches(vendor.getId()));
+                holder.setKeywords(getVendorSearchKeywords(vendor.getId()));
+                holder.setPlanSubscriptions(getSubscription(vendor.getId()));
+                holder.setVendorPolicies(getVendorPolicies(vendor.getId()));
+                holder.setReferrals(getReferrals(vendor.getId()));
+                holder.setVendorUsers(getVendorUserHolders(vendor.getId()));
+                holders.add(holder);
+            }
+            return Response.status(200).entity(holders).build();
         } catch (Exception ex) {
             return Response.status(500).build();
         }
@@ -104,10 +141,11 @@ public class VendorInternalApiV2 {
     public Response getVendor(@PathParam(value = "vendorId") int vendorId) {
         try {
             Vendor vendor = dao.find(Vendor.class, vendorId);
-            addCategories(vendor);
-            addContacts(vendor);
-            addBranches(vendor);
-            addSubscription(vendor);
+            vendor.setVendorCategories(getCategories(vendor.getId()));
+            vendor.setVendorContacts(getContacts(vendor.getId()));
+            vendor.setBranches(getVendorBranches(vendor.getId()));
+            vendor.setSubscriptions(getSubscription(vendor.getId()));
+            vendor.setReferrals(getReferrals(vendor.getId()));
             return Response.status(200).entity(vendor).build();
         } catch (Exception ex) {
             return Response.status(500).build();
@@ -138,6 +176,36 @@ public class VendorInternalApiV2 {
            return Response.status(500).build();
        }
     }
+
+    @SecuredUserVendor
+    @GET
+    @Path("plans")
+    public Response getPlans(){
+        try{
+            List<Plan> plans = dao.get(Plan.class);
+            for(Plan plan : plans){
+                initPlan(plan);
+            }
+            return Response.status(200).entity(plans).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    @SecuredUserVendor
+    @GET
+    @Path("plan/{planId}")
+    public Response getPlan(@PathParam(value = "planId") int planId){
+        try{
+            Plan plan = dao.find(Plan.class, planId);
+            initPlan(plan);
+            return Response.status(200).entity(plan).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
 
     @SecuredUser
     @POST
@@ -217,30 +285,53 @@ public class VendorInternalApiV2 {
 
     @SecuredUser
     @GET
+    @Path("search-keywords/{vendorId}")
+    public Response getKeywords(@PathParam(value ="vendorId") int vendorId){
+        try{
+            String sql = "select b from QvmSearchKeyword b where b.vendorId = :value0 order by b.created desc";
+            List<QvmSearchKeyword> keywords = dao.getJPQLParamsMax(QvmSearchKeyword.class, sql ,10, vendorId);
+            return Response.status(200).entity(keywords).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @GET
     @Path("vendor-users/{vendorId}")
     public Response getVendorUsers(@PathParam(value = "vendorId") int vendorId){
         try{
-            String jpql = "select b from VendorUser b where b.vendorId = :value0 order by b.id";
-            List<VendorUser> vendorUsers = dao.getJPQLParams(VendorUser.class, jpql, vendorId);
-            List<VendorUserHolder> holders = new ArrayList<>();
-            for(VendorUser vu : vendorUsers){
-                String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
-                List<Role> roles = dao.getJPQLParams(Role.class, sql2, vu);
-                VendorUserHolder holder = new VendorUserHolder();
-                holder.setRoles(roles);
-                holder.setActivities(getUserActivities(vu));
-                holder.setVendorUser(vu);
-                AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vu.getId(), 'A');
-                if(at != null) {
-                    holder.setLastLogin(at.getCreated());
-                }
-                holders.add(holder);
-            }
-            return Response.status(200).entity(holders).build();
+            return Response.status(200).entity(getVendorUserHolders(vendorId)).build();
         }catch (Exception ex){
             ex.printStackTrace();
             return Response.status(500).build();
         }
+    }
+
+    private List<AccessToken> getAccessTokens(int vendorId){
+        String sql = "select b from AccessToken b where b.vendorUserId in (" +
+                "select c.id from VendorUser c where c.vendorId = :value0) order by b.created desc";
+        return dao.getJPQLParams(AccessToken.class, sql , vendorId);
+    }
+
+    private List<VendorUserHolder> getVendorUserHolders(int vendorId){
+        String jpql = "select b from VendorUser b where b.vendorId = :value0 order by b.id";
+        List<VendorUser> vendorUsers = dao.getJPQLParams(VendorUser.class, jpql, vendorId);
+        List<VendorUserHolder> holders = new ArrayList<>();
+        for(VendorUser vu : vendorUsers){
+            String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
+            List<Role> roles = dao.getJPQLParams(Role.class, sql2, vu);
+            VendorUserHolder holder = new VendorUserHolder();
+            holder.setRoles(roles);
+            holder.setActivities(getUserActivities(vu));
+            holder.setVendorUser(vu);
+            AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vu.getId(), 'A');
+            if(at != null) {
+                holder.setLastLogin(at.getCreated());
+            }
+            holders.add(holder);
+        }
+        return holders;
     }
 
 
@@ -393,6 +484,7 @@ public class VendorInternalApiV2 {
     @Path("approve-vendor")
     public Response approveVendor(@HeaderParam("Authorization") String header, SignupHolder holder){
         try{
+
             String sql = "select b from SignupRequest b where b.id = :value0 and b.status = :value1";
             SignupRequest check = dao.findJPQLParams(SignupRequest.class, sql, holder.getSignupRequest().getId(), 'N');//new
             if(check == null){
@@ -401,67 +493,101 @@ public class VendorInternalApiV2 {
             holder.getSignupRequest().setStatus('A');//approved
             dao.update(holder.getSignupRequest());
             VendorUser vendorUser= null;
+            PlanSubscription planSubscription = null;
             if(holder.isNewVendor()){
                 Vendor vendor = createVendor(holder.getSignupRequest());
                 vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
                 createBranch(holder.getSignupRequest(), vendor);
-                createSubscription(vendor, vendorUser, holder.getSubscription());
+                planSubscription = createSubscription(vendor, holder);
             } else{
                 Vendor vendor = dao.find(Vendor.class, holder.getExistingVendorId());
+                //new to qvm
                 if(vendor.getIntegrationType() == null){
                     vendor.setIntegrationType('V');
                     dao.update(vendor);
                     vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
-                    createSubscription(vendor, vendorUser, holder.getSubscription());
+                    planSubscription = createSubscription(vendor, holder);
                 }
                 else{
                     vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
+                    planSubscription = dao.findTwoConditions(PlanSubscription.class, "status", "vendorId", 'A', vendor.getId());
                 }
-                Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "name", vendor.getId(), "Main Branch");
-                if(branch == null){
-                    createBranch(holder.getSignupRequest(), vendor);
-                }
+                createBranch(holder.getSignupRequest(), vendor);
             }
-            createRole(vendorUser, holder.getSignupRequest().getVendorType());
+
+            createRole(vendorUser, planSubscription);
+            List<PlanReferral> refs = getReferrals(planSubscription);
+            Map<String,Object> map = new HashMap<>();
+            map.put("firstName", vendorUser.getFirstName());
+            map.put("invitationCode", refs.get(0).getInvitationCode());
+            map.put("invitations", refs.size());
+            String subject = "Your Free Trial is Activated - تم تفعيل باقتكم التجريبية";
+            String body = this.getHtmlTemplate(AppConstants.VENDOR_APPROVED_EMAIL_TEMPLATE, map);
+            async.sendHtmlEmail(vendorUser.getEmail(), subject, body);
             return Response.status(200).build();
         }catch (Exception ex){
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
 
-    private void createRole(VendorUser vendorUser, char vendorType){
-        Role role = null;
-        if(vendorType == 'V') {
-            role = dao.findCondition(Role.class, "name", "Viewer");
-        }else if(vendorType == 'U'){
-            role = dao.findCondition(Role.class, "name", "Stock Owner");
+    private List<PlanReferral> getReferrals(PlanSubscription ps){
+        List<PlanReferral> referrals = dao.getTwoConditions(PlanReferral.class, "subscriptionId", "status", ps.getId(), 'A');
+        return referrals;
+    }
+
+    private PlanSubscription createSubscription(Vendor vendor, SignupHolder signupHolder){
+        Plan plan = dao.find(Plan.class, signupHolder.getPlanId());
+        PlanOption option = dao.find(PlanOption.class, signupHolder.getOptionId());
+        List<PlanOffer> offers = dao.getTwoConditions(PlanOffer.class, "planId", "planOption.id", plan.getId(), option.getId());
+        PlanSubscription ps = new PlanSubscription();
+        ps.setStatus('I');
+        ps.setCreatedBy(signupHolder.getCreatedBy());
+        ps.setOptionId(option.getId());
+        ps.setPlanId(plan.getId());
+        ps.setVendorId(vendor.getId());
+        ps.setCreated(new Date());
+        ps.setStartDate(new Date());
+        ps.setEndDate(new Date());
+        dao.persist(ps);
+        for(PlanOffer offer : offers){
+            if(offer.getOfferType() == 'S'){
+                Date endDate = Helper.addMinutes(ps.getStartDate(), 60*24*offer.getDurationDays());
+                ps.setEndDate(endDate);
+            }
+            if(offer.getOfferType() == 'R'){
+                this.createReferrals(ps, offer);
+            }
         }
-        if(role!= null){
-            String sql2 = "insert into vnd_user_role (vendor_user_id, role_id) values (" + vendorUser.getId() + ", " + role.getId() + ")";
+        ps.setStatus('A');
+        dao.update(ps);
+        return ps;
+    }
+
+    private void createRole(VendorUser vendorUser, PlanSubscription planSubscription){
+        String sql = "select b.role from PlanRole b where b.plan.id = :value0";
+        List<Role> roles = dao.getJPQLParams(Role.class, sql, planSubscription.getPlanId());
+        for(Role role : roles){
+            String sql2 = "insert into vnd_user_role (role_id, vendor_user_id) values(" + role.getId() + "," + vendorUser.getId() + ")";
             dao.insertNative(sql2);
         }
     }
 
-    private void createSubscription(Vendor vendor, VendorUser vendorUser, Subscription subscription){
-        subscription.setStatus('A');
-        subscription.setVendorId(vendor.getId());
-        subscription.setVendorUserId(vendorUser.getId());
-        dao.persist(subscription);
-
-    }
-
     private void createBranch(SignupRequest sr, Vendor vendor){
-        //create branch
-        Branch b = new Branch();
-        b.setCityId(sr.getCityId());
-        b.setVendorId(vendor.getId());
-        b.setCountryId(sr.getCountryId());
-        b.setName("Main Branch");
-        b.setNameAr("الفرع الرئيسي");
-        b.setCreated(new Date());
-        b.setCreatedBy(0);
-        b.setStatus('A');
-        dao.persist(b);
+        Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "name", vendor.getId(), "Main Branch");
+        if(branch == null){
+            //create branch
+            Branch b = new Branch();
+            b.setCityId(sr.getCityId());
+            b.setVendorId(vendor.getId());
+            b.setCountryId(sr.getCountryId());
+            b.setName("Main Branch");
+            b.setNameAr("الفرع الرئيسي");
+            b.setCreated(new Date());
+            b.setCreatedBy(0);
+            b.setStatus('A');
+            dao.persist(b);
+        }
     }
 
     private Vendor createVendor(SignupRequest sr){
@@ -567,6 +693,73 @@ public class VendorInternalApiV2 {
         catch (Exception ex) {
             ex.printStackTrace();
             return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("subscription/free-trial")
+    public Response createFreeTrial(PlanSubscription planSubscription){
+        try{
+            List<PlanSubscription> check = dao.getTwoConditions(PlanSubscription.class, "status", "vendorId", 'A', planSubscription.getVendorId());
+            if(!check.isEmpty()){
+                //already subscribed
+                return Response.status(409).build();
+            }
+            planSubscription.setCreated(new Date());
+            planSubscription.setStartDate(new Date());
+            planSubscription.setStatus('I');//Inactive
+            dao.persist(planSubscription);
+            List<PlanOffer> offers = dao.getTwoConditions(PlanOffer.class, "planId" , "planOption.id", planSubscription.getPlanId(), planSubscription.getOptionId());
+            for(PlanOffer offer : offers){
+                if(offer.getOfferType() == 'S'){
+                    //free trial
+                    Date endDate = Helper.addMinutes(planSubscription.getStartDate(), 60*24*offer.getDurationDays());
+                    planSubscription.setEndDate(endDate);
+                }
+                if(offer.getOfferType() == 'R'){
+                    createReferrals(planSubscription, offer);
+                }
+            }
+            planSubscription.setStatus('A');
+            dao.update(planSubscription);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+    private void createReferrals(PlanSubscription planSubscription, PlanOffer offer){
+        String random = Helper.getRandomString(6);
+        boolean found = true;
+        while(found){
+            PlanReferral pr = dao.findCondition(PlanReferral.class, "invitationCode", random);
+            if(pr == null){
+                found = false;
+            }
+        }
+        for(int i = 0; i < offer.getInvitations(); i++){
+            PlanReferral ref = new PlanReferral();
+            ref.setVendorId(planSubscription.getVendorId());
+            ref.setCreated(new Date());
+            ref.setCreatedBy(planSubscription.getCreatedBy());
+            ref.setStatus('A');
+            ref.setSubscriptionId(planSubscription.getId());
+            ref.setInvitationCode(random);
+            dao.persist(ref);
+        }
+    }
+
+    private void initPlan(Plan plan){
+        if(plan != null) {
+            List<PlanOption> planOptions = dao.getCondition(PlanOption.class, "planId", plan.getId());
+            List<PlanOffer> planOffers = dao.getCondition(PlanOffer.class, "planId", plan.getId());
+            String sql = "select b.role from PlanRole b where b.plan =:value0";
+            List<Role> roles = dao.getJPQLParams(Role.class, sql, plan);
+            plan.setRoles(roles);
+            plan.setPlanOptions(planOptions);
+            plan.setPlanOffers(planOffers);
         }
     }
 
@@ -699,24 +892,46 @@ public class VendorInternalApiV2 {
         return !vendors.isEmpty();
     }
 
-    private void addCategories(Vendor vendor){
-        List<VendorCategory> vendorCategories = dao.getCondition(VendorCategory.class, "vendorId", vendor.getId());
-        vendor.setVendorCategories(vendorCategories);
+    private List<VendorCategory> getCategories(int vendorId){
+       return dao.getCondition(VendorCategory.class, "vendorId", vendorId);
     }
-    private void addContacts(Vendor vendor){
-        List<VendorContact> vendorContacts = dao.getCondition(VendorContact.class, "vendorId", vendor.getId());
-        vendor.setVendorContacts(vendorContacts);
+    private List<VendorContact> getContacts(int vendorId){
+        return dao.getCondition(VendorContact.class, "vendorId", vendorId);
     }
 
-    private void addBranches(Vendor vendor){
-        List<Branch> branches = dao.getCondition(Branch.class, "vendorId", vendor.getId());
-        vendor.setBranches(branches);
+    private List<Branch> getVendorBranches(int vendorId){
+        return dao.getCondition(Branch.class, "vendorId", vendorId);
     }
 
-    private void addSubscription(Vendor vendor){
-        String sql = "select b from Subscription b where b.vendorId = :value0 order by expire desc";
-        List<Subscription> subscriptions = dao.getJPQLParams(Subscription.class, sql, vendor.getId());
-        vendor.setSubscriptions(subscriptions);
+
+    private List<VendorUser> getAllVendorUsers(int vendorId){
+        return dao.getCondition(VendorUser.class, "vendorId", vendorId);
+    }
+
+
+    private List<VendorPricePolicy> getVendorPolicies(int vendorId){
+        String sql = "select b from VendorPricePolicy b where b.vendorId = :value0";
+        List<VendorPricePolicy> pricePolicies = dao.getJPQLParams(VendorPricePolicy.class, sql, vendorId);
+        for(var vpp : pricePolicies){
+            PricePolicy pp = dao.find(PricePolicy.class, vpp.getPricePolicyId());
+            vpp.setPricePolicy(pp);
+        }
+        return pricePolicies;
+    }
+
+    private List<QvmSearchKeyword> getVendorSearchKeywords(int vendorId){
+        String sql = "select b from QvmSearchKeyword b where b.vendorId =: value0 order by created desc";
+        return dao.getJPQLParams(QvmSearchKeyword.class, sql, vendorId);
+    }
+
+    private List<PlanSubscription> getSubscription(int vendorId){
+        String sql = "select b from PlanSubscription b where b.vendorId = :value0 order by b.endDate desc";
+        return dao.getJPQLParams(PlanSubscription.class, sql, vendorId);
+    }
+
+    private List<PlanReferral> getReferrals(int vendorId){
+        String sql = "select b from PlanReferral b where b.vendorId = :value0 order by b.created desc";
+        return dao.getJPQLParams(PlanReferral.class, sql, vendorId);
     }
 
 
