@@ -112,23 +112,53 @@ public class VendorInternalApiV2 {
     @SecuredUserVendor
     @GET
     @Path("vendors/detailed")
-    public Response getAllVendors2(){
+    public Response getAllVendorsDetailed(){
         try {
             List<Vendor> vendors = dao.getOrderBy(Vendor.class, "id");
             List<VendorHolder> holders = new ArrayList<>();
             for(Vendor vendor : vendors){
-                VendorHolder holder = new VendorHolder();
-                holder.setVendor(vendor);
-                holder.setAccessTokens(getAccessTokens(vendor.getId()));
-                holder.setBranches(getVendorBranches(vendor.getId()));
-                holder.setKeywords(getVendorSearchKeywords(vendor.getId()));
-                holder.setPlanSubscriptions(getSubscription(vendor.getId()));
-                holder.setVendorPolicies(getVendorPolicies(vendor.getId()));
-                holder.setReferrals(getReferrals(vendor.getId()));
-                holder.setVendorUsers(getVendorUserHolders(vendor.getId()));
+                VendorHolder holder = getVendorHolder(vendor);
                 holders.add(holder);
             }
             return Response.status(200).entity(holders).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+    private VendorHolder getVendorHolder(Vendor vendor){
+        VendorHolder holder = new VendorHolder();
+        holder.setVendor(vendor);
+        holder.setAccessTokens(getAccessTokens(vendor.getId()));
+        holder.setBranches(getVendorBranches(vendor.getId()));
+        holder.setKeywords(getVendorSearchKeywords(vendor.getId()));
+        holder.setPlanSubscriptions(getSubscription(vendor.getId()));
+        holder.setVendorPolicies(getVendorPolicies(vendor.getId()));
+        holder.setReferrals(getReferrals(vendor.getId()));
+        holder.setVendorUsers(getVendorUserHolders(vendor.getId()));
+        return holder;
+    }
+
+    @SecuredUser
+    @PUT
+    @Path("vendor")
+    public Response updateVendor(Vendor vendor){
+        try{
+            dao.update(vendor);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @GET
+    @Path("vendor/{vendorId}/detailed")
+    public Response getVendorDetailed(@PathParam(value = "vendorId") int vendorId) {
+        try {
+            Vendor vendor = dao.find(Vendor.class, vendorId);
+            VendorHolder vendorHolder = getVendorHolder(vendor);
+            return Response.status(200).entity(vendorHolder).build();
         } catch (Exception ex) {
             return Response.status(500).build();
         }

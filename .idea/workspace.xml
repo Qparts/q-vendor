@@ -7,26 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorHolder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/Plan.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanOffer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanOption.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanReferral.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanRole.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanSubscription.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanVendor.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/vendor-approved.vm" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/dao/DAO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/SignupHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/SignupHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Subscription.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorPricePolicy.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorPricePolicy.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUserRole.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUserRole.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/WEB-INF/velocity/email/registration-complete.vm" beforeDir="false" afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/registration-complete.vm" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -179,7 +161,7 @@
       <workItem from="1579126564672" duration="11691000" />
       <workItem from="1579520001272" duration="55000" />
       <workItem from="1579557986217" duration="15412000" />
-      <workItem from="1579715303149" duration="21986000" />
+      <workItem from="1579715303149" duration="23807000" />
     </task>
     <servers />
   </component>
