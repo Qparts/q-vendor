@@ -3,6 +3,7 @@ package q.rest.vendor.model.entity;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 
@@ -49,6 +50,16 @@ public class Branch implements Serializable {
     @Column(name="note")
     private String note;
 
+    @Transient
+    private List<BranchContact> branchContacts;
+
+    public List<BranchContact> getBranchContacts() {
+        return branchContacts;
+    }
+
+    public void setBranchContacts(List<BranchContact> branchContacts) {
+        this.branchContacts = branchContacts;
+    }
 
     public int getId() {
         return id;

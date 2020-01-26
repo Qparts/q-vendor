@@ -237,6 +237,31 @@ public class VendorInternalApiV2 {
     }
 
 
+
+    @SecuredUser
+    @POST
+    @Path("branch-contact")
+    public Response createBranchContact(BranchContact bc){
+        try{
+            String sql = "select b from BranchContact b where " +
+                    "b.vendorId =:value0 and " +
+                    "b.branchId = :value1 and " +
+                    "b.phone =:value2 and " +
+                    "b.firstName =:value3 and " +
+                    "b.lastName =:value4 and " +
+                    "b.email = :value5";
+            List<BranchContact> contacts = dao.getJPQLParams(BranchContact.class, sql , bc.getVendorId(), bc.getBranchId(), bc.getPhone(), bc.getFirstName(), bc.getLastName(), bc.getEmail());
+            if(!contacts.isEmpty()){
+                return Response.status(409).build();
+            }
+            bc.setCreated(new Date());
+            dao.persist(bc);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUser
     @POST
     @Path("branch")
@@ -930,7 +955,13 @@ public class VendorInternalApiV2 {
     }
 
     private List<Branch> getVendorBranches(int vendorId){
-        return dao.getCondition(Branch.class, "vendorId", vendorId);
+        List<Branch> branches = dao.getCondition(Branch.class, "vendorId", vendorId);
+        for(Branch branch : branches){
+            branch.setBranchContacts(new ArrayList<>());
+            List<BranchContact> contacts = dao.getTwoConditions(BranchContact.class, "vendorId", "branchId", vendorId, branch.getId());
+            branch.setBranchContacts(contacts);
+        }
+        return branches;
     }
 
 
