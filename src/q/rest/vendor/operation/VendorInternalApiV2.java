@@ -8,6 +8,7 @@ import q.rest.vendor.filter.*;
 import q.rest.vendor.helper.AppConstants;
 import q.rest.vendor.helper.Helper;
 import q.rest.vendor.model.contract.*;
+import q.rest.vendor.model.contract.qvm.*;
 import q.rest.vendor.model.entity.*;
 import q.rest.vendor.model.entity.plan.*;
 import q.rest.vendor.model.entity.user.*;
@@ -18,10 +19,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import javax.ws.rs.core.*;
 import java.io.StringWriter;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -891,8 +889,36 @@ public class VendorInternalApiV2 {
             if(r.getStatus() != 200) {
                 throw new Exception();
             }
-            Object o = r.readEntity(Object.class);
-            return Response.status(200).entity(o).build();
+            List<QvmObject> list = r.readEntity(new GenericType<List<QvmObject>>(){});
+            try{
+                for(QvmObject o : list){
+                    if(o.getAvailability() != null){
+                        for(QvmAvailability av : o.getAvailability()){
+                            try{
+                                if(o.getSource() == 'L') {
+                                    Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "clientBranchId", o.getVendorId(), av.getBranch().getBranchId());
+                                    if(branch != null){
+                                        branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
+                                    }
+                                    av.getBranch().setLocalBranch(branch);
+                                }
+                                else if (o.getSource() == 'U'){
+                                    Branch branch = dao.find(Branch.class, av.getBranch().getqBranchId());
+                                    if(branch != null){
+                                        branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
+                                    }
+                                    av.getBranch().setLocalBranch(branch);
+                                }
+                            }catch (Exception ignore){
+
+                            }
+                        }
+                    }
+                }
+            }catch (Exception x){
+                x.printStackTrace();
+            }
+            return Response.status(200).entity(list).build();
         }catch (Exception ex){
 //            ex.printStackTrace();
             return Response.status(500).build();
@@ -957,11 +983,13 @@ public class VendorInternalApiV2 {
     private List<Branch> getVendorBranches(int vendorId){
         List<Branch> branches = dao.getCondition(Branch.class, "vendorId", vendorId);
         for(Branch branch : branches){
-            branch.setBranchContacts(new ArrayList<>());
-            List<BranchContact> contacts = dao.getTwoConditions(BranchContact.class, "vendorId", "branchId", vendorId, branch.getId());
-            branch.setBranchContacts(contacts);
+            branch.setBranchContacts(getBranchContacts(branch.getId(), vendorId));
         }
         return branches;
+    }
+
+    private List<BranchContact> getBranchContacts(int branchId, int vendorId){
+        return dao.getTwoConditions(BranchContact.class, "vendorId", "branchId", vendorId, branchId);
     }
 
 

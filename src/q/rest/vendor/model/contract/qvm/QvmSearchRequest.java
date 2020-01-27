@@ -1,4 +1,4 @@
-package q.rest.vendor.model.contract;
+package q.rest.vendor.model.contract.qvm;
 
 import java.util.List;
 
