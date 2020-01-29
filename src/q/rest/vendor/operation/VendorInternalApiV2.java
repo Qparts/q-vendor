@@ -674,6 +674,8 @@ public class VendorInternalApiV2 {
     }
 
 
+
+
     @ValidApp
     @POST
     @Path("signup-request")
@@ -705,7 +707,6 @@ public class VendorInternalApiV2 {
             return Response.status(500).build();
         }
     }
-
 
 
     @SecuredUser
