@@ -10,7 +10,10 @@ import q.rest.vendor.helper.Helper;
 import q.rest.vendor.model.contract.*;
 import q.rest.vendor.model.contract.qvm.*;
 import q.rest.vendor.model.entity.*;
+import q.rest.vendor.model.entity.branch.Branch;
 import q.rest.vendor.model.entity.plan.*;
+import q.rest.vendor.model.entity.registration.EmailVerification;
+import q.rest.vendor.model.entity.registration.SignupRequest;
 import q.rest.vendor.model.entity.user.*;
 
 import javax.ejb.EJB;
@@ -70,6 +73,41 @@ public class VendorInternalApiV2 {
     }
 
 
+
+    @GET
+    @Path("test3")
+    @Produces(MediaType.TEXT_HTML)
+    public Response test3QuotationReadyHtml(){
+        Map<String,Object> vmap = new HashMap<>();
+        vmap.put("activationLink", "AS6s1ax");
+        String body = this.getHtmlTemplate(AppConstants.EMAIL_VERIFICATION_EMAIL_TEMPLATE, vmap);
+        return Response.status(200).entity(body).build();
+    }
+
+
+    private String createVerificationObject(VendorUser vendorUser) {
+        String code = "";
+        boolean available = false;
+        do {
+            code = Helper.getRandomString(20);
+            String sql = "select b from EmailVerification b where b.token = :value0 and b.expire >= :value1 and status =:value2";
+            List<EmailVerification> l = dao.getJPQLParams(EmailVerification.class, sql, code, new Date(), 'R');
+            if (l.isEmpty()) {
+                available = true;
+            }
+        } while (!available);
+
+        EmailVerification ev = new EmailVerification();
+        ev.setToken(code);
+        ev.setCreated(new Date());
+        ev.setVendorId(vendorUser.getVendorId());
+        ev.setVendorUserId(vendorUser.getId());
+        ev.setExpire(Helper.addMinutes(ev.getCreated(), 60*24*14));
+        ev.setEmail(vendorUser.getEmail());
+        ev.setStatus('R');
+        dao.persist(ev);
+        return code;
+    }
 
 
     public String getHtmlTemplate(String templateName, Map<String,Object> map){
@@ -191,18 +229,6 @@ public class VendorInternalApiV2 {
             ex.printStackTrace();
             return Response.status(500).build();
         }
-    }
-
-    @SecuredUser
-    @GET
-    @Path("vendor-uploads")
-    public Response getVendorUploads(){
-       try{
-            List<VendorUploadRequest> uploads = dao.getOrderByOriented(VendorUploadRequest.class, "created", "desc");
-            return Response.status(200).entity(uploads).build();
-       }catch (Exception ex){
-           return Response.status(500).build();
-       }
     }
 
     @SecuredUserVendor
@@ -397,22 +423,10 @@ public class VendorInternalApiV2 {
             WebApp webApp = getWebAppFromAuthHeader(header);
             String password = Helper.cypher((String) map.get("password"));
             String email = ((String) map.get("email")).trim().toLowerCase();
-            String sql = "select b from VendorUser b where b.status = :value0 and b.email = :value1 and b.password = :value2";
-            VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, 'A', email, password);
+            String sql = "select b from VendorUser b where b.status in (:value0, :value1) and b.email = :value2 and b.password = :value3";
+            VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, 'A', 'V', email, password);
             if (vendorUser != null) {
-                VendorUserHolder holder = new VendorUserHolder();
-                AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vendorUser.getId(), 'A');
-                if(at != null) {
-                    holder.setLastLogin(at.getCreated());
-                }
-                String token = issueToken(vendorUser, webApp, 500);
-                String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
-                List<Role> roles = dao.getJPQLParams(Role.class, sql2, vendorUser);
-                holder.setRoles(roles);
-                holder.setActivities(getUserActivities(vendorUser));
-                holder.setVendorUser(vendorUser);
-                holder.setToken(token);
-
+                VendorUserHolder holder = getLoginObject(vendorUser, webApp);
                 return Response.status(200).entity(holder).build();
             } else {
                 throw new Exception();
@@ -422,6 +436,21 @@ public class VendorInternalApiV2 {
         }
     }
 
+    private VendorUserHolder getLoginObject(VendorUser vendorUser, WebApp webApp){
+        VendorUserHolder holder = new VendorUserHolder();
+        AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vendorUser.getId(), 'A');
+        if(at != null) {
+            holder.setLastLogin(at.getCreated());
+        }
+        String token = issueToken(vendorUser, webApp, 500);
+        String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
+        List<Role> roles = dao.getJPQLParams(Role.class, sql2, vendorUser);
+        holder.setRoles(roles);
+        holder.setActivities(getUserActivities(vendorUser));
+        holder.setVendorUser(vendorUser);
+        holder.setToken(token);
+        return holder;
+    }
 
     private List<Activity> getUserActivities(VendorUser user) {
         String sql = "select * from vnd_activity a where a.id in ("
@@ -531,13 +560,61 @@ public class VendorInternalApiV2 {
     }
 
 
+    @ValidApp
+    @POST
+    @Path("email-verify")
+    public Response verifyAccount(@HeaderParam("Authorization") String authHeader, Map<String ,String> map){
+        try{
+            WebApp webApp = getWebAppFromAuthHeader(authHeader);
+            String code = map.get("code");
+            String email = map.get("email");
+            String sql = "select b from EmailVerification b where b.token = :value0 " +
+                    " and b.email = :value1 and b.status = :value2";
+            EmailVerification ev = dao.findJPQLParams(EmailVerification.class, sql, code, email);
+            if(ev == null){
+                return Response.status(404).build();
+            }
+            if(ev.getExpire().before(new Date())){
+                ev.setStatus('E');
+                dao.update(ev);
+                //delete verification
+                return Response.status(410).entity("Resource Expired").build();
+            }
+            VendorUser vu = dao.find(VendorUser.class, ev.getVendorUserId());
+            vu.setStatus('V');//verified
+            dao.update(vu);
+            ev.setStatus('V');
+            dao.update(ev);
+            VendorUserHolder holder = getLoginObject(vu, webApp);
+            return Response.status(200).entity(holder).build();
+        }catch(Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("send-verification")
+    public Response sendVerification(VendorUser vendorUser){
+        try{
+            String activationCode = createVerificationObject(vendorUser);
+            String subject2 = "Verify your email address - توثيق البريد الإلكتروني";
+            Map<String,Object> map2 = new HashMap<>();
+            map2.put("activationLink", AppConstants.getActivationLink(vendorUser.getEmail(), activationCode));
+            String body2 = this.getHtmlTemplate(AppConstants.EMAIL_VERIFICATION_EMAIL_TEMPLATE, map2);
+            async.sendHtmlEmail(vendorUser.getEmail(), subject2, body2);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
 
     @SecuredUser
     @PUT
     @Path("approve-vendor")
     public Response approveVendor(@HeaderParam("Authorization") String header, SignupHolder holder){
         try{
-
             String sql = "select b from SignupRequest b where b.id = :value0 and b.status = :value1";
             SignupRequest check = dao.findJPQLParams(SignupRequest.class, sql, holder.getSignupRequest().getId(), 'N');//new
             if(check == null){
@@ -577,6 +654,7 @@ public class VendorInternalApiV2 {
             String subject = "Your Free Trial is Activated - تم تفعيل باقتكم التجريبية";
             String body = this.getHtmlTemplate(AppConstants.VENDOR_APPROVED_EMAIL_TEMPLATE, map);
             async.sendHtmlEmail(vendorUser.getEmail(), subject, body);
+            sendVerification(vendorUser);
             return Response.status(200).build();
         }catch (Exception ex){
             ex.printStackTrace();
@@ -951,7 +1029,7 @@ public class VendorInternalApiV2 {
         try {
             String appSecret = map.get("appSecret");
             String token = map.get("token");
-            Long userId = Long.parseLong(map.get("username"));
+            Integer userId = Integer.parseInt(map.get("username"));
             WebApp webApp = getWebAppFromSecret(appSecret);
 
             String sql = "select b from AccessToken b where b.vendorUserId = :value0 and b.webApp = :value1 " +

@@ -1,6 +1,7 @@
 package q.rest.vendor.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import q.rest.vendor.model.entity.branch.Branch;
 import q.rest.vendor.model.entity.plan.PlanReferral;
 import q.rest.vendor.model.entity.plan.PlanSubscription;
 

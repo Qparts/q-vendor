@@ -59,7 +59,7 @@ public class SecuredUserVendorAgent implements ContainerRequestFilter {
             WebApp webApp = getWebAppFromSecret(appSecret);
             String sql = "select b from AccessToken b where b.vendorUserId = :value0 and b.webApp = :value1 " +
                     "and b.status =:value2 and b.token =:value3 and b.expire > :value4";
-            List<AccessToken> accessTokenList = dao.getJPQLParams(AccessToken.class, sql, Long.parseLong(username), webApp, 'A', token, new Date());
+            List<AccessToken> accessTokenList = dao.getJPQLParams(AccessToken.class, sql, Integer.parseInt(username), webApp, 'A', token, new Date());
             if(accessTokenList.isEmpty()){
                 throw new NotAuthorizedException("Request authorization failed");
             }

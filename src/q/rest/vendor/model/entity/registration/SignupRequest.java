@@ -1,4 +1,4 @@
-package q.rest.vendor.model.entity;
+package q.rest.vendor.model.entity.registration;
 
 import javax.persistence.*;
 import java.io.Serializable;

@@ -1,6 +1,6 @@
 package q.rest.vendor.model.contract;
 
-import q.rest.vendor.model.entity.SignupRequest;
+import q.rest.vendor.model.entity.registration.SignupRequest;
 
 import java.io.Serializable;
 

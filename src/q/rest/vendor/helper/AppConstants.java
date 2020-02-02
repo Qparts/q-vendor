@@ -19,5 +19,10 @@ public class AppConstants {
     public static final String POST_QVM_SEARCH_PARTS = PRODUCT_QVM_SERVICE + "search-parts";
     public final static String REGISTRATION_COMPLETE_EMAIL_TEMPLATE = "email/registration-complete.vm";
     public final static String VENDOR_APPROVED_EMAIL_TEMPLATE = "email/vendor-approved.vm";
+    public final static String EMAIL_VERIFICATION_EMAIL_TEMPLATE = "email/email-verification.vm";
+
+    public final static String getActivationLink(String email, String code){
+        return "https://www.qvm.parts/activation?email=" + email + "&code="+code;
+    }
 
 }

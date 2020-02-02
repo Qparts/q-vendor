@@ -1,4 +1,4 @@
-package q.rest.vendor.model.entity;
+package q.rest.vendor.model.entity.registration;
 
 import java.io.Serializable;
 import java.util.Date;

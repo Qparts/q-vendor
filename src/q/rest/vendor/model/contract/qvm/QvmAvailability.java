@@ -1,7 +1,5 @@
 package q.rest.vendor.model.contract.qvm;
 
-import q.rest.vendor.model.entity.Branch;
-
 public class QvmAvailability {
     private QvmBranch branch;
     private Integer quantity;

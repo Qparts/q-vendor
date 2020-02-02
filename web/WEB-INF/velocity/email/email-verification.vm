@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="x-apple-disable-message-reformatting">
-    <title>QVM Registration</title>
+    <title>Q.parts Account Activation</title>
+
     <style>
         html,
         body {
@@ -18,7 +19,6 @@
             -ms-text-size-adjust: 100%;
             -webkit-text-size-adjust: 100%;
         }
-
         div[style*="margin: 16px 0"] {
             margin: 0 !important;
         }
@@ -76,7 +76,6 @@
                 min-width: 414px !important;
             }
         }
-
     </style>
     <style>
         .button-td,
@@ -94,7 +93,6 @@
                 width: 100% !important;
                 margin: auto !important;
             }
-
             .stack-column,
             .stack-column-center {
                 display: block !important;
@@ -105,7 +103,6 @@
             .stack-column-center {
                 text-align: center !important;
             }
-
 
             .center-on-narrow {
                 text-align: center !important;
@@ -118,22 +115,18 @@
                 display: inline-block !important;
             }
 
-
             .email-container p {
                 font-size: 17px !important;
             }
         }
 
     </style>
-
 </head>
 <body width="100%" style="margin: 0; padding: 0 !important; mso-line-height-rule: exactly; background-color: #f7f7f7;">
 <center style="width: 100%; background-color: #f7f7f7;">
-
     <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
-        Password Reset
+        Account Activation
     </div>
-
     <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
         &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
     </div>
@@ -150,33 +143,62 @@
                 <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
                     <tr>
                         <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
-                            <h1 style="margin: 0 0 10px; font-size: 25px; line-height: 30px; color: #37363c; font-weight: normal;">Hi $firstName</h1>
+                            <h1 style="margin: 0 0 10px; font-size: 25px; line-height: 30px; color: #37363c; font-weight: normal;">Email&nbsp;Activation</h1>
+                            <p style="margin: 0 0 10px;">
+                                Thank you for registering with <a href="https://www.qvm.parts/" target="_blank" style="text-decoration:none;color:#ed4036">Qvm.parts</a> Please activate your email address by clicking on the link below
+                            </p>
                         </td>
                         <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;" dir="rtl">
-                            <h1 style="margin: 0 0 10px; font-size: 25px; line-height: 30px; color: #37363c; font-weight: normal;"> مرحبا $firstName</h1>
+                            <h1 style="margin: 0 0 10px; font-size: 25px; line-height: 30px; color: #37363c; font-weight: normal;">توثيق البريد الإلكتروني</h1>
+                            <p style="margin: 0 0 10px;">
+                                شكرا لتسجيلكم في منصة <a href="https://www.qvm.parts/" target="_blank" style="text-decoration:none;color:#ed4036">Qvm.parts</a> قم بتوثيق بريدكم الإلكتروني للإستفادة من كامل الخدمات بالضغط على الزر ادناه
+                            </p>
                         </td>
                     </tr>
                     <tr>
-                        <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;">
+                        <td style="padding: 0 20px 20px;">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="center-on-narrow" style="float:left;">
+                                <tr>
+                                    <td class="button-td button-td-primary" style="border-radius: 0 20px 20px 20px; background: #ed4036;">
+                                            <a class="button-a button-a-primary" href="$activationLink" style="background: #ed4036; border: 1px solid #ed4036; font-family: sans-serif; font-size: 15px; line-height: 15px; text-decoration: none; padding: 13px 17px; color: #ffffff; display: block; border-radius: 0 20px 20px 20px;">Click here to activte your account</a>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                        <td style="padding: 0 20px 20px;float: right;" dir="rtl">
+                            <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="center-on-narrow" style="float:left;" dir="rtl">
+                                <tr dir="rtl">
+                                    <td class="button-td button-td-primary" style="border-radius: 0 20px 20px 20px; background: #ed4036;float: right" dir="rtl">
+                                        <a class="button-a button-a-primary" href="$activationLink" style="background: #ed4036; border: 1px solid #ed4036; font-family: sans-serif; font-size: 15px; line-height: 15px; text-decoration: none; padding: 13px 17px; color: #ffffff; display: block; border-radius: 0 20px 20px 20px;">اضغط هنا لتفعيل حسابكم</a>
+                                    </td>
+                                </tr>
+
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555; border-top: 5px solid #f7f7f7;">
                             <p style="margin: 0 0 10px;">
-                                Thank you for joining <a href="#" target="_blank" style="text-decoration:none;color:#ed4036">Qvm.parts</a>. We will review your application and reply to you soon so you can enjoy our platform
+                                Or copy and paste this link in your browser<br />
+                                <a href="#" target="_blank" style="text-decoration:none;color:#ed4036; font-size: 13px;">$activationLink</a>
                             </p>
                         </td>
-                        <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555;float: right" dir="rtl">
+                        <td style="padding: 20px; font-family: sans-serif; font-size: 15px; line-height: 20px; color: #555555; border-top: 5px solid #f7f7f7;" dir="rtl">
                             <p style="margin: 0 0 10px;">
-                                 شكرا لطلب انضمامكم لمنصة <a href="#" target="_blank" style="text-decoration:none;color:#ed4036">Qvm.parts</a>. سنقوم بمراجعة طلبكم و سنقوم بالرد عليكم باسرع وقت لكي تتمكنوا من استخدام منصتنا
+                                أو قم بنسخ الرابط ادناه في المتصفح<br />
+                                <a href="#" target="_blank" style="text-decoration:none;color:#ed4036; font-size: 13px;">$activationLink</a>
                             </p>
                         </td>
                     </tr>
                 </table>
             </td>
         </tr>
-
     </table>
     <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="margin: auto;" class="email-container">
         <tr>
             <td style="padding: 20px; font-family: sans-serif; font-size: 12px; line-height: 15px; text-align: left; color: #888888;">
-                <a href="#" target="_blank" style="text-decoration:none;color:#888888">Qvm.parts</a>
+                <a href="https://www.qvm.parts" target="_blank" style="text-decoration:none;color:#888888">Qvm.parts</a>
                 <br><br>
                 <span class="unstyle-auto-detected-links">Prince Metib Road, Al Wahah, Dammam 34252, Saudi Arabia | (996) 508 448 856</span>
                 <br><br>

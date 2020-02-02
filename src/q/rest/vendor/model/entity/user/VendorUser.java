@@ -17,7 +17,7 @@ public class VendorUser implements Serializable{
 	@SequenceGenerator(name = "vnd_user_id_seq_gen", sequenceName = "vnd_user_id_seq", initialValue=1, allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.AUTO, generator = "vnd_user_id_seq_gen")
 	@Column(name="id")
-	private long id;
+	private int id;
 	
 	@Column(name="first_name")
 	private String firstName;
@@ -30,7 +30,7 @@ public class VendorUser implements Serializable{
 	private String password;
 	
 	@Column(name="status")
-	private char status;
+	private char status;//A = account created, V = verified
 
 	@Column(name="vendor_id")
 	private int vendorId;
@@ -62,7 +62,7 @@ public class VendorUser implements Serializable{
 		this.vendorId = vendorId;
 	}
 
-	public long getId() {
+	public int getId() {
 		return id;
 	}
 
@@ -84,7 +84,7 @@ public class VendorUser implements Serializable{
 
 
 
-	public void setId(long id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 

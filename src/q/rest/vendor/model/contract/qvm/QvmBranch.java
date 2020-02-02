@@ -1,6 +1,6 @@
 package q.rest.vendor.model.contract.qvm;
 
-import q.rest.vendor.model.entity.Branch;
+import q.rest.vendor.model.entity.branch.Branch;
 
 public class QvmBranch {
     private Branch localBranch;

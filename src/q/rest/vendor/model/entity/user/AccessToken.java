@@ -20,7 +20,7 @@ public class AccessToken implements Serializable {
     private long id;
 
     @Column(name="vendor_user_id")
-    private long vendorUserId;
+    private int vendorUserId;
 
     @Column(name="token_created")
     @Temporal(TemporalType.TIMESTAMP)
@@ -40,7 +40,7 @@ public class AccessToken implements Serializable {
     @Column(name = "token_status")
     private char status;// this is the token status, K = Killed, A = Active
 
-    public AccessToken(long username, Date created) {
+    public AccessToken(int username, Date created) {
         this.vendorUserId = username;
         this.created = created;
     }
@@ -57,11 +57,11 @@ public class AccessToken implements Serializable {
         this.id = id;
     }
 
-    public long getVendorUserId() {
+    public int getVendorUserId() {
         return vendorUserId;
     }
 
-    public void setVendorUserId(long vendorUserId) {
+    public void setVendorUserId(int vendorUserId) {
         this.vendorUserId = vendorUserId;
     }
 

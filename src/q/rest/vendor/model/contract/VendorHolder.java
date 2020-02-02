@@ -1,6 +1,7 @@
 package q.rest.vendor.model.contract;
 
 import q.rest.vendor.model.entity.*;
+import q.rest.vendor.model.entity.branch.Branch;
 import q.rest.vendor.model.entity.plan.PlanReferral;
 import q.rest.vendor.model.entity.plan.PlanSubscription;
 import q.rest.vendor.model.entity.user.AccessToken;
