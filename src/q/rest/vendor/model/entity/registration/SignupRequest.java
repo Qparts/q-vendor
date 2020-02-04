@@ -43,6 +43,16 @@ public class SignupRequest implements Serializable {
     private int countryId;
     @Column(name="city_id")
     private int cityId;
+    @Column(name="referral_code")
+    private String referralCode;
+
+    public String getReferralCode() {
+        return referralCode;
+    }
+
+    public void setReferralCode(String referralCode) {
+        this.referralCode = referralCode;
+    }
 
     public int getCountryId() {
         return countryId;

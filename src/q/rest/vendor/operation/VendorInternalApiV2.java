@@ -631,6 +631,7 @@ public class VendorInternalApiV2 {
                 vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
                 createBranch(holder.getSignupRequest(), vendor);
                 planSubscription = createSubscription(vendor, holder);
+                createReferralFromVendor(holder.getSignupRequest(), vendor);
             } else{
                 Vendor vendor = dao.find(Vendor.class, holder.getExistingVendorId());
                 //new to qvm
@@ -639,6 +640,7 @@ public class VendorInternalApiV2 {
                     dao.update(vendor);
                     vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
                     planSubscription = createSubscription(vendor, holder);
+                    createReferralFromVendor(holder.getSignupRequest(), vendor);
                 }
                 else{
                     vendorUser = createVendorUser(holder.getSignupRequest(), vendor);
@@ -649,6 +651,8 @@ public class VendorInternalApiV2 {
 
             createRole(vendorUser, planSubscription);
             List<PlanReferral> refs = getReferrals(planSubscription);
+
+
             Map<String,Object> map = new HashMap<>();
             map.put("firstName", vendorUser.getFirstName());
             map.put("invitationCode", refs.get(0).getInvitationCode());
@@ -661,6 +665,21 @@ public class VendorInternalApiV2 {
         }catch (Exception ex){
             ex.printStackTrace();
             return Response.status(500).build();
+        }
+    }
+
+    private void createReferralFromVendor(SignupRequest signupRequest, Vendor vendor){
+        //check referral
+        String referralCode = signupRequest.getReferralCode();
+        if(referralCode != null && referralCode.length() > 0){
+            String sql2 = "select b from PlanReferral b where b.status =:value0 and b.invitationCode =:value1 order by b.id";
+            List<PlanReferral> referrals = dao.getJPQLParamsMax(PlanReferral.class, sql2, 1, 'A', referralCode);
+            if(!referrals.isEmpty()){
+                PlanReferral ref = referrals.get(0);
+                ref.setTargetVendorId(vendor.getId());
+                ref.setStatus('P');
+                dao.update(ref);
+            }
         }
     }
 
@@ -1137,7 +1156,7 @@ public class VendorInternalApiV2 {
     }
 
     private List<PlanReferral> getReferrals(int vendorId){
-        String sql = "select b from PlanReferral b where b.vendorId = :value0 order by b.created desc";
+        String sql = "select b from PlanReferral b where b.vendorId = :value0 order by b.id";
         return dao.getJPQLParams(PlanReferral.class, sql, vendorId);
     }
 

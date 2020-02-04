@@ -20,7 +20,7 @@ public class PlanReferral implements Serializable {
     @Column(name="invitation_code")
     private String invitationCode;
     @Column( name="status")
-    private char status;//A = available, U = used, I = inactive
+    private char status;//A = available, U = used, P = pending paid subscription
     @Column( name="subscription_id")
     private int subscriptionId;
     @Column( name="created")
