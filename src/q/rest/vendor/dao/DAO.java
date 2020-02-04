@@ -126,8 +126,17 @@ public class DAO {
         return (List<T>) em.createNativeQuery(sql, klass).getResultList();
     }
 
+    @SuppressWarnings("unchecked")
+    public <T> List<T> getNativeMax(Class<T> klass, String sql, int max) {
+        return (List<T>) em.createNativeQuery(sql, klass).setMaxResults(max).getResultList();
+    }
+
     public List getNative(String sql) {
         return em.createNativeQuery(sql).getResultList();
+    }
+
+    public List getNativeMax(String sql, int max) {
+        return em.createNativeQuery(sql).setMaxResults(max).getResultList();
     }
 
     public void updateNative(String sql) {

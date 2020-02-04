@@ -1,8 +1,11 @@
 package q.rest.vendor.model.contract.qvm;
 
+import java.util.Date;
+
 public class QvmAvailability {
     private QvmBranch branch;
     private Integer quantity;
+    private Date offerEnd;
 
     public QvmAvailability() {
     }
@@ -14,6 +17,14 @@ public class QvmAvailability {
 
     public QvmBranch getBranch() {
         return branch;
+    }
+
+    public Date getOfferEnd() {
+        return offerEnd;
+    }
+
+    public void setOfferEnd(Date offerEnd) {
+        this.offerEnd = offerEnd;
     }
 
     public void setBranch(QvmBranch branch) {

@@ -16,6 +16,25 @@ public class QvmObject implements Serializable {
     private Boolean available;
     private Date lastUpdate;
     private List<QvmAvailability> availability;
+    private Double specialOfferPrice;
+    private Date offerEnd;
+
+    public Date getOfferEnd() {
+        return offerEnd;
+    }
+
+    public void setOfferEnd(Date offerEnd) {
+        this.offerEnd = offerEnd;
+    }
+
+    public Double getSpecialOfferPrice() {
+        return specialOfferPrice;
+    }
+
+    public void setSpecialOfferPrice(Double specialOfferPrice) {
+        this.specialOfferPrice = specialOfferPrice;
+    }
+
 
     public char getSource() {
         return source;

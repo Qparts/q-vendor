@@ -362,6 +362,8 @@ public class VendorInternalApiV2 {
         }
     }
 
+
+
     @SecuredUser
     @GET
     @Path("search-keywords/{vendorId}")
@@ -569,7 +571,7 @@ public class VendorInternalApiV2 {
             String code = map.get("code");
             String email = map.get("email");
             String sql = "select b from EmailVerification b where b.token = :value0 " +
-                    " and b.email = :value1 and b.status = :value2";
+                    " and b.email = :value1";
             EmailVerification ev = dao.findJPQLParams(EmailVerification.class, sql, code, email);
             if(ev == null){
                 return Response.status(404).build();
@@ -922,6 +924,43 @@ public class VendorInternalApiV2 {
         }
     }
 
+
+
+
+    @GET
+    @Path("latest-searches-group")
+    public Response getSearchKeywordGroups(){
+        try{
+            String sql = "select query, count(*) from vnd_search_keyword where length(query) > 0 group by query order by count desc";
+            List<Object> ss = dao.getNativeMax(sql, 100);
+            List<KeywordGroup> kgs = new ArrayList<>();
+            for(Object o : ss){
+                if(o instanceof Object[]){
+                    Object[] objArray = (Object[]) o;
+                    String keyword = (String) objArray[0];
+                    int count = ((Number) objArray[1]).intValue();
+                    KeywordGroup kg = new KeywordGroup();
+                    kg.setCount(count);
+                    kg.setKeyword(keyword);
+                    sql = "select * from vnd_search_keyword where query = '" + keyword +"' order by created desc";
+                    List<QvmSearchKeyword> qvmSearchKeyword = dao.getNativeMax(QvmSearchKeyword.class, sql, 1);
+                    if(!qvmSearchKeyword.isEmpty()){
+                        kg.setLastSearch(qvmSearchKeyword.get(0).getCreated());
+                    }
+
+                    sql = "select * from vnd_vendor where id in (select distinct vendor_id from vnd_search_keyword where query = '"+keyword+"')";
+                    List<Vendor> vendors = dao.getNative(Vendor.class, sql);
+                    kg.setVendors(vendors);
+                    kgs.add(kg);
+                }
+            }
+            return Response.status(200).entity(kgs).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUserVendor
     @Path("search-parts")
     @POST
@@ -981,7 +1020,7 @@ public class VendorInternalApiV2 {
                                     }
                                     av.getBranch().setLocalBranch(branch);
                                 }
-                                else if (o.getSource() == 'U'){
+                                else if (o.getSource() == 'U' || o.getSource() == 'S'){
                                     Branch branch = dao.find(Branch.class, av.getBranch().getqBranchId());
                                     if(branch != null){
                                         branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
@@ -1108,7 +1147,7 @@ public class VendorInternalApiV2 {
         try {
             String[] values = header.split("&&");
             String username = values[1].trim();
-            VendorUser vu = dao.find(VendorUser.class, Long.parseLong(username));
+            VendorUser vu = dao.find(VendorUser.class, Integer.parseInt(username));
             return vu;
         } catch (Exception ex) {
             return null;

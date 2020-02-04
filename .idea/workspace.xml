@@ -7,25 +7,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/EmailVerification.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/email-verification.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/KeywordGroup.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredUserVendorAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredVendorAgent.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/filter/agents/SecuredVendorAgent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/SignupHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/SignupHolder.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorHolder.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorHolder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/dao/DAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/dao/DAO.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmAvailability.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmAvailability.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmBranch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmBranch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Branch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/branch/Branch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/SignupRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/Vendor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorJoinRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/VendorJoinRequest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/VendorUploadRequest.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/AccessToken.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/AccessToken.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUser.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/user/VendorUser.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmObject.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/web/WEB-INF/velocity/email/registration-complete.vm" beforeDir="false" afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/registration-complete.vm" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -180,7 +167,11 @@
       <workItem from="1579520001272" duration="55000" />
       <workItem from="1579557986217" duration="15412000" />
       <workItem from="1579715303149" duration="33328000" />
-      <workItem from="1580563738812" duration="6299000" />
+      <workItem from="1580563738812" duration="6596000" />
+      <workItem from="1580678538015" duration="81000" />
+      <workItem from="1580721494209" duration="27000" />
+      <workItem from="1580723035372" duration="683000" />
+      <workItem from="1580745009880" duration="6506000" />
     </task>
     <servers />
   </component>
