@@ -948,7 +948,7 @@ public class VendorInternalApiV2 {
     @Path("latest-searches-date")
     public Response getSearchKeywordsDate(){
         try{
-            String sql = "select cast(created as date), count(*) from vnd_search_keyword group by cast(created as date) order by cast(created as date) desc";
+            String sql = "select cast(created as date), count(*) from vnd_search_keyword group by cast(created as date) order by cast(created as date) asc";
             List<Object> ss = dao.getNativeMax(sql, 30);
             List<KeywordGroup> kgs = new ArrayList<>();
             for(Object o : ss) {
