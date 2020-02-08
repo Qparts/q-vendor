@@ -945,22 +945,19 @@ public class VendorInternalApiV2 {
 
     @SecuredUser
     @GET
-    @Path("latest-searches-date")
-    public Response getSearchKeywordsDate(){
+    @Path("latest-searches-date/from/{from}/to/{to}")
+    public Response getSearchKeywordsDate(@PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
         try{
-            String sql = "select z.* from (select cast(created as date), count(*) from vnd_search_keyword group by cast(created as date) order by cast(created as date) desc) z order by created asc";
-            List<Object> ss = dao.getNativeMax(sql, 30);
+            Helper h = new Helper();
+            List<Date> dates = h.getAllDatesBetween(new Date(fromLong) , new Date(toLong));
             List<KeywordGroup> kgs = new ArrayList<>();
-            for(Object o : ss) {
-                if (o instanceof Object[]) {
-                    Object[] objArray = (Object[]) o;
-                    Date created = (Date) objArray[0];
-                    int count = ((Number) objArray[1]).intValue();
-                    KeywordGroup kg = new KeywordGroup();
-                    kg.setLastSearch(created);
-                    kg.setCount(count);
-                    kgs.add(kg);
-                }
+            for(Date date : dates){
+                String sql = "select count(*) from QvmSearchKeyword b where cast(b.created as date) = cast(:value0 as date)";
+                Number n = dao.findJPQLParams(Number.class, sql, date);
+                KeywordGroup kg = new KeywordGroup();
+                kg.setCount(n.intValue());
+                kg.setLastSearch(date);
+                kgs.add(kg);
             }
             return Response.status(200).entity(kgs).build();
         }

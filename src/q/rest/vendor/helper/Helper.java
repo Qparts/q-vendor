@@ -5,8 +5,11 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Helper {
 
@@ -15,6 +18,32 @@ public class Helper {
     private static final String NUMBER = "0123456789";
 
     private static final String SALT = CHAR_LOWER + CHAR_UPPER + NUMBER;
+
+    public List<Date> getAllDatesBetween(Date from, Date to){
+        LocalDate fromLocal = convertToLocalDate(from);
+        LocalDate toLocal = convertToLocalDate(to);
+
+        List<LocalDate> localDates = fromLocal.datesUntil(toLocal)
+                .collect(Collectors.toList());
+
+        List<Date> dates = new ArrayList<>();
+        for(LocalDate ld : localDates){
+            dates.add(convertToDate(ld));
+        }
+        return dates;
+    }
+
+
+    public LocalDate convertToLocalDate(Date dateToConvert) {
+        return LocalDate.ofInstant(
+                dateToConvert.toInstant(), ZoneId.systemDefault());
+    }
+
+    public Date convertToDate(LocalDate dateToConvert) {
+        return Date.from(dateToConvert.atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toInstant());
+    }
 
     public static String getRandomString(int length) {
         SecureRandom random = new SecureRandom();
