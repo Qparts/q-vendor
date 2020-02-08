@@ -8,8 +8,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanReferral.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanReferral.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/SignupRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -169,7 +167,7 @@
       <workItem from="1580678538015" duration="81000" />
       <workItem from="1580721494209" duration="27000" />
       <workItem from="1580723035372" duration="683000" />
-      <workItem from="1580745009880" duration="9349000" />
+      <workItem from="1580745009880" duration="12223000" />
     </task>
     <servers />
   </component>

@@ -943,9 +943,36 @@ public class VendorInternalApiV2 {
         }
     }
 
+    @SecuredUser
+    @GET
+    @Path("latest-searches-date")
+    public Response getSearchKeywordsDate(){
+        try{
+            String sql = "select cast(created as date), count(*) from vnd_search_keyword group by cast(created as date) order by cast(created as date) desc";
+            List<Object> ss = dao.getNativeMax(sql, 30);
+            List<KeywordGroup> kgs = new ArrayList<>();
+            for(Object o : ss) {
+                if (o instanceof Object[]) {
+                    Object[] objArray = (Object[]) o;
+                    Date created = (Date) objArray[0];
+                    int count = ((Number) objArray[1]).intValue();
+                    KeywordGroup kg = new KeywordGroup();
+                    kg.setLastSearch(created);
+                    kg.setCount(count);
+                    kgs.add(kg);
+                }
+            }
+            return Response.status(200).entity(kgs).build();
+        }
+        catch (Exception ex){
+            return Response.status(500).build();
+        }
+
+    }
 
 
 
+    @SecuredUser
     @GET
     @Path("latest-searches-group")
     public Response getSearchKeywordGroups(){
