@@ -1031,13 +1031,19 @@ public class VendorInternalApiV2 {
             int userId = ((Number) map.get("userId")).intValue();
             int vendorId = ((Number) map.get("vendorId")).intValue();
             boolean attachProduct = (Boolean) map.get("attachProduct");
-            if(vendorId > 0) {
-                saveSearchKeyword(query, userId, vendorId, webApp);
-            }
             QvmSearchRequest searchRequest = new QvmSearchRequest();
             searchRequest.setVendorCreds(new ArrayList<>());
             searchRequest.setQuery(query);
             searchRequest.setAttachProduct(attachProduct);
+            searchRequest.setRequesterId(userId);
+            if(vendorId > 0) {
+                saveSearchKeyword(query, userId, vendorId, webApp);
+                searchRequest.setRequesterType('V');
+            }
+            else{
+                searchRequest.setRequesterType('U');
+            }
+
             List<Vendor> vendors = dao.getTwoConditions(Vendor.class, "integrationType", "status", 'I', 'A');
             for(Vendor vendor: vendors){
                 QvmVendorCredentials creds = new QvmVendorCredentials();
@@ -1051,34 +1057,7 @@ public class VendorInternalApiV2 {
                 throw new Exception();
             }
             List<QvmObject> list = r.readEntity(new GenericType<List<QvmObject>>(){});
-            try{
-                for(QvmObject o : list){
-                    if(o.getAvailability() != null){
-                        for(QvmAvailability av : o.getAvailability()){
-                            try{
-                                if(o.getSource() == 'L') {
-                                    Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "clientBranchId", o.getVendorId(), av.getBranch().getBranchId());
-                                    if(branch != null){
-                                        branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
-                                    }
-                                    av.getBranch().setLocalBranch(branch);
-                                }
-                                else if (o.getSource() == 'U' || o.getSource() == 'S'){
-                                    Branch branch = dao.find(Branch.class, av.getBranch().getqBranchId());
-                                    if(branch != null){
-                                        branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
-                                    }
-                                    av.getBranch().setLocalBranch(branch);
-                                }
-                            }catch (Exception ignore){
-
-                            }
-                        }
-                    }
-                }
-            }catch (Exception x){
-                x.printStackTrace();
-            }
+            updateQvmObjectWithBranches(list);
             return Response.status(200).entity(list).build();
         }catch (Exception ex){
 //            ex.printStackTrace();
@@ -1086,6 +1065,49 @@ public class VendorInternalApiV2 {
         }
     }
 
+    @SecuredUserVendor
+    @PUT
+    @Path("search-availability/update-branches")
+    public Response repopulateQvmObjects(List<QvmObject> list){
+        try{
+            updateQvmObjectWithBranches(list);
+            return Response.status(200).entity(list).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+
+    }
+
+    public void updateQvmObjectWithBranches(List<QvmObject> list) throws Exception{
+        try{
+            for(QvmObject o : list){
+                if(o.getAvailability() != null){
+                    for(QvmAvailability av : o.getAvailability()){
+                        try{
+                            if(o.getSource() == 'L') {
+                                Branch branch = dao.findTwoConditions(Branch.class, "vendorId", "clientBranchId", o.getVendorId(), av.getBranch().getBranchId());
+                                if(branch != null){
+                                    branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
+                                }
+                                av.getBranch().setLocalBranch(branch);
+                            }
+                            else if (o.getSource() == 'U' || o.getSource() == 'S'){
+                                Branch branch = dao.find(Branch.class, av.getBranch().getqBranchId());
+                                if(branch != null){
+                                    branch.setBranchContacts(getBranchContacts(branch.getId(), o.getVendorId()));
+                                }
+                                av.getBranch().setLocalBranch(branch);
+                            }
+                        }catch (Exception ignore){
+
+                        }
+                    }
+                }
+            }
+        }catch (Exception x){
+            x.printStackTrace();
+        }
+    }
 
 
     @SecuredUser
@@ -1102,7 +1124,24 @@ public class VendorInternalApiV2 {
 
 
 
-
+    @POST
+    @Path("match-token/ws")
+    public Response matchTokenWs(Map<String, Object> map) {
+        try {
+            String token = ((String) map.get("token"));
+            int vendorUserId = ((Number) map.get("username")).intValue();
+            String jpql = "select b from AccessToken b where b.vendorUserId = :value0 and b.status = :value1 and b.token = :value2 and b.expire > :value3";
+            List<AccessToken> l = dao.getJPQLParams(AccessToken.class, jpql, vendorUserId, 'A', token, new Date());
+            if (!l.isEmpty()) {
+                return Response.status(200).build();
+            } else {
+                throw new Exception();
+            }
+        }catch(Exception ex) {
+            ex.printStackTrace();
+            return Response.status(403).build();// unauthorized
+        }
+    }
 
     @SecuredVendor
     @POST

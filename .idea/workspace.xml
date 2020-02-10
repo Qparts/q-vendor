@@ -8,7 +8,10 @@
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmObject.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmObject.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmSearchRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/qvm/QvmSearchRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -43,11 +46,11 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="q.rest.vendor.operation.socket" />
       <recent name="q.rest.vendor.model.entity.registration" />
       <recent name="q.rest.vendor.model.entity.plan" />
       <recent name="q.rest.vendor.model.contract" />
       <recent name="q.rest.vendor.model.entity" />
-      <recent name="q.rest.vendor.filter" />
     </key>
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/web/WEB-INF/velocity/email" />
@@ -168,7 +171,10 @@
       <workItem from="1580678538015" duration="81000" />
       <workItem from="1580721494209" duration="27000" />
       <workItem from="1580723035372" duration="683000" />
-      <workItem from="1580745009880" duration="14677000" />
+      <workItem from="1580745009880" duration="21504000" />
+      <workItem from="1581250988717" duration="728000" />
+      <workItem from="1581253471045" duration="1445000" />
+      <workItem from="1581335206547" duration="1701000" />
     </task>
     <servers />
   </component>

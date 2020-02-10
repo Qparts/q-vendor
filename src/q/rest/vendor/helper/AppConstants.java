@@ -5,6 +5,7 @@ public class AppConstants {
     public final static String EMAIL_ADDRESS = "no-reply@qetaa.com";
     public final static String PASSWORD = "qetaa3!Cs@";
     public final static String SMTP_SERVER = "smtp.zoho.com";
+    public final static String PRODUCT_WS_ENDPOINT = "ws://localhost:8081/service-q-product/ws/";
 
     private final static String WEBSITE_BASE_URL = "http://qtest.fareed9.com/";
     private static final String USER_SERVICE = "http://localhost:8081/service-q-user/rest/internal/api/v2/";
@@ -23,6 +24,10 @@ public class AppConstants {
 
     public final static String getActivationLink(String email, String code){
         return "https://www.qvm.parts/activation?email=" + email + "&code="+code;
+    }
+
+    public final static String getProductQVMSearchEndpoint(int vendorUserId, String token){
+        return PRODUCT_WS_ENDPOINT + "search/vendor-user/"+vendorUserId+"/token/" + token;
     }
 
 }

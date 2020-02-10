@@ -20,6 +20,8 @@ public class Helper {
     private static final String SALT = CHAR_LOWER + CHAR_UPPER + NUMBER;
 
     public List<Date> getAllDatesBetween(Date from, Date to){
+        from = new Date(from.getTime() - (1000*60*60*24));
+        to = new Date(to.getTime() + (1000*60*60*24));
         LocalDate fromLocal = convertToLocalDate(from);
         LocalDate toLocal = convertToLocalDate(to);
 
