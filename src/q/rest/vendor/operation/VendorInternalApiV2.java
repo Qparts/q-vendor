@@ -1279,6 +1279,33 @@ public class VendorInternalApiV2 {
     }
 
 
+    @SecuredUser
+    @PUT
+    @Path("/role")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response updateRole(Role role) {
+        try {
+            List<Activity> all = role.getActivityList();
+            for (Activity activity : all) {
+                if (activity.isAccess()) {
+                    String sql = "insert into vnd_role_activity(role_id, activity_id) values " + "(" + role.getId()
+                            + "," + activity.getId() + ") on conflict do nothing";
+                    dao.insertNative(sql);
+                } else {
+                    String sql = "delete from vnd_role_activity where role_id = " + role.getId() + " and activity_id = "
+                            + activity.getId();
+                    dao.updateNative(sql);
+                }
+            }
+            dao.update(role);
+            return Response.status(200).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
+
     private List<Activity> getRoleActivities(Role role) {
         List<Activity> allActs = dao.getOrderBy(Activity.class, "name");
         for (Activity a : allActs) {
