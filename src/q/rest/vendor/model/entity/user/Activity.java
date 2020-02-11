@@ -1,5 +1,7 @@
 package q.rest.vendor.model.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -17,9 +19,17 @@ public class Activity implements Serializable{
 	private String nameAr;
 	@Column(name="type")
 	private String type;
-	
-	
-	
+	@Transient
+	private boolean access;
+
+	public boolean isAccess() {
+		return access;
+	}
+
+	public void setAccess(boolean access) {
+		this.access = access;
+	}
+
 	public String getType() {
 		return type;
 	}

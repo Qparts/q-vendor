@@ -1263,6 +1263,33 @@ public class VendorInternalApiV2 {
     }
 
 
+    @SecuredUser
+    @GET
+    @Path("roles")
+    public Response getAllRoles() {
+        try {
+            List<Role> roles = dao.get(Role.class);
+            for (Role role : roles) {
+                role.setActivityList(this.getRoleActivities(role));
+            }
+            return Response.status(200).entity(roles).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
+    private List<Activity> getRoleActivities(Role role) {
+        List<Activity> allActs = dao.getOrderBy(Activity.class, "name");
+        for (Activity a : allActs) {
+            RoleActivity roleAct = dao.findTwoConditions(RoleActivity.class, "role", "activity", role, a);
+            if (roleAct != null) {
+                a.setAccess(true);
+            }
+        }
+        return allActs;
+    }
+
 
     // retrieves app object from app secret
     private WebApp getWebAppFromSecret(String secret) throws Exception {
