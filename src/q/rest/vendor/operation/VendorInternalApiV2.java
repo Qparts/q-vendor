@@ -995,6 +995,31 @@ public class VendorInternalApiV2 {
     }
 
 
+    @SecuredUser
+    @GET
+    @Path("latest-searches-date/from/{from}/to/{to}/vendor/{vendorId}")
+    public Response getVendorSearchKeywordsDate(@PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong, @PathParam(value = "vendorId") int vendorId){
+        try{
+            Helper h = new Helper();
+            List<Date> dates = h.getAllDatesBetween(new Date(fromLong) , new Date(toLong));
+            List<KeywordGroup> kgs = new ArrayList<>();
+            for(Date date : dates){
+                String sql = "select count(*) from QvmSearchKeyword b where cast(b.created as date) = cast(:value0 as date) and b.vendorId = :value1";
+                Number n = dao.findJPQLParams(Number.class, sql, date, vendorId);
+                KeywordGroup kg = new KeywordGroup();
+                kg.setCount(n.intValue());
+                kg.setLastSearch(date);
+                kgs.add(kg);
+            }
+            return Response.status(200).entity(kgs).build();
+        }
+        catch (Exception ex){
+            return Response.status(500).build();
+        }
+
+    }
+
+
 
     @SecuredUser
     @GET
