@@ -995,7 +995,7 @@ public class VendorInternalApiV2 {
     }
 
     /**
-     * Active vendor is the vendor that was active during the past 7 days
+     * Active vendor is the vendor that was active at least 5 days of the the past 7 days
      */
     @SecuredUser
     @GET
@@ -1080,7 +1080,33 @@ public class VendorInternalApiV2 {
 
     }
 
-
+    @SecuredUser
+    @GET
+    @Path("latest-search-group/vendor")
+    public Response getLatestVendorSearchesGroup(){
+        try{
+            Helper h = new Helper();
+            String dateString = h.getDateFormat(new Date(), "yyyy-MM-dd");
+            String sql = "select z.* from (select vendor_id, count(*) from vnd_search_keyword where created > '2020-02-02' group by vendor_id order by count desc) z";
+            List<Object> ss = dao.getNative(sql);
+            List<VendorSearchCount> vscs = new ArrayList<>();
+            for(Object o : ss){
+                if(o instanceof Object[]){
+                    Object[] objArray = (Object[]) o;
+                    int vendorId =  ((Number) objArray[0]).intValue();
+                    int count =  ((Number) objArray[1]).intValue();
+                    VendorSearchCount vsc = new VendorSearchCount();
+                    Vendor vendor = dao.find(Vendor.class, vendorId);
+                    vsc.setCount(count);
+                    vsc.setVendor(vendor);
+                    vscs.add(vsc);
+                }
+            }
+            return Response.status(200).entity(vscs).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
     @SecuredUser
     @GET

@@ -7,6 +7,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/VendorSearchCount.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
@@ -171,7 +172,7 @@
       <workItem from="1581250988717" duration="728000" />
       <workItem from="1581253471045" duration="1445000" />
       <workItem from="1581335206547" duration="4109000" />
-      <workItem from="1581420463441" duration="9374000" />
+      <workItem from="1581420463441" duration="11517000" />
     </task>
     <servers />
   </component>
