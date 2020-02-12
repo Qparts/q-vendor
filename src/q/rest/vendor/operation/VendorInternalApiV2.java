@@ -994,6 +994,67 @@ public class VendorInternalApiV2 {
 
     }
 
+    /**
+     * Active vendor is the vendor that was active during the past 7 days
+     */
+    @SecuredUser
+    @GET
+    @Path("search-keywords/active-vendors")
+    public Response getActiveVendors(){
+        try{
+            Date tenDaysAgo = Helper.addMinutes(new Date(), -60*24*10);
+            Helper h = new Helper();
+            String dateString = h.getDateFormat(tenDaysAgo, "yyyy-MM-dd");
+            String sql ="select * from vnd_vendor v where v.created < '"+dateString+"' and 4 < " +
+                    " (select count (*) from (select cast(created as date), count(*) from vnd_search_keyword where vendor_id = v.id and created > '"+dateString+"' group by cast(created as date) order by created ) x)";
+            List<Vendor> vendors = dao.getNative(Vendor.class, sql);
+            return Response.status(200).entity(vendors).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+
+    /**
+     * Inactive vendor is the vendor that did not search anything in the past 10 days and is older than 10 days
+     */
+    //@SecuredUser
+    @GET
+    @Path("search-keywords/inactive-vendors")
+    public Response getInactiveVendors(){
+        try{
+            Date tenDaysAgo = Helper.addMinutes(new Date(), -60*24*10);
+            String sql = "select b from Vendor b where b.created < :value0 and b.integrationType is not null and b.id not in (" +
+                    "select c.vendorId from QvmSearchKeyword c where c.created > :value0)";
+            List<Vendor> vendors = dao.getJPQLParams(Vendor.class, sql , tenDaysAgo);
+            return Response.status(200).entity(vendors).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
+
+    /**
+     * Somehow active vendor is the vendor that searched at least once but less than four days in the past 10 days
+     */
+    @SecuredUser
+    @GET
+    @Path("search-keywords/somehow-active-vendors")
+    public Response getSomehowActiveVendors(){
+        try{
+            Date tenDaysAgo = Helper.addMinutes(new Date(), -60*24*10);
+            Helper h = new Helper();
+            String dateString = h.getDateFormat(tenDaysAgo, "yyyy-MM-dd");
+            String sql ="select * from vnd_vendor v where v.created < '"+dateString+"' and " +
+                    " (select count (*) from (select cast(created as date), count(*) from vnd_search_keyword where vendor_id = v.id and created > '"+dateString+"' group by cast(created as date) order by created ) x) between 1 and 3";
+            List<Vendor> vendors = dao.getNative(Vendor.class, sql);
+            return Response.status(200).entity(vendors).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
     @SecuredUser
     @GET
