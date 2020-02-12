@@ -949,13 +949,15 @@ public class VendorInternalApiV2 {
     public Response getVendorsJoinedDate(@PathParam(value = "from") long fromLong, @PathParam(value = "to") long toLong){
         try{
             Helper h = new Helper();
-            List<Date> dates = h.getAllDatesBetween(new Date(fromLong), new Date(toLong));
+            Date toDate = new Date(toLong);
+            Date fromDate = new Date(fromLong);
+            List<Date> dates = h.getAllDatesBetween(fromDate, toDate);
             List<VendorsDateGroup> vdgs = new ArrayList<>();
             for(Date date : dates){
                 String sql = "select b from Vendor b where cast(b.created as date) = cast(:value0 as date)";
                 List<Vendor> dailyVendors = dao.getJPQLParams(Vendor.class, sql, date);
-                String sql2 = "select b from Vendor b where cast(b.created as date) <= cast(:value0 as date)";
-                List<Vendor> totalVendors = dao.getJPQLParams(Vendor.class, sql2, date);
+                String sql2 = "select b from Vendor b where cast(b.created as date) between cast(:value0 as date) and cast(:value1 as date)";
+                List<Vendor> totalVendors = dao.getJPQLParams(Vendor.class, sql2, fromDate, date);
                 VendorsDateGroup vdg = new VendorsDateGroup();
                 vdg.setDate(date);
                 vdg.setDailyVendors(dailyVendors);
