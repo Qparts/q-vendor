@@ -950,21 +950,23 @@ public class VendorInternalApiV2 {
         try{
             Helper h = new Helper();
             List<Date> dates = h.getAllDatesBetween(new Date(fromLong), new Date(toLong));
-            List<KeywordGroup> kgs = new ArrayList<>();
+            List<VendorsDateGroup> vdgs = new ArrayList<>();
             for(Date date : dates){
                 String sql = "select b from Vendor b where cast(b.created as date) = cast(:value0 as date)";
-                List<Vendor> vendors = dao.getJPQLParams(Vendor.class, sql, date);
-                KeywordGroup kg = new KeywordGroup();
-                kg.setLastSearch(date);
-                kg.setVendors(vendors);
-                kgs.add(kg);
+                List<Vendor> dailyVendors = dao.getJPQLParams(Vendor.class, sql, date);
+                String sql2 = "select b from Vendor b where cast(b.created as date) <= cast(:value0 as date)";
+                List<Vendor> totalVendors = dao.getJPQLParams(Vendor.class, sql2, date);
+                VendorsDateGroup vdg = new VendorsDateGroup();
+                vdg.setDate(date);
+                vdg.setDailyVendors(dailyVendors);
+                vdg.setTotalVendors(totalVendors);
+                vdgs.add(vdg);
             }
-            return Response.status(200).entity(kgs).build();
+            return Response.status(200).entity(vdgs).build();
         }catch (Exception ex){
             return Response.status(500).build();
         }
     }
-
 
     @SecuredUser
     @GET
