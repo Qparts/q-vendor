@@ -1087,8 +1087,8 @@ public class VendorInternalApiV2 {
         try{
             Helper h = new Helper();
             String dateString = h.getDateFormat(new Date(), "yyyy-MM-dd");
-            String sql = "select z.* from (select vendor_id, count(*) from vnd_search_keyword where created > '2020-02-02' group by vendor_id order by count desc) z";
-            List<Object> ss = dao.getNative(sql);
+            String sql = "select z.* from (select vendor_id, count(*) from vnd_search_keyword where created > '"+dateString+"' group by vendor_id order by count desc) z";
+            List<Object> ss = dao.getNativeMax(sql, 10);
             List<VendorSearchCount> vscs = new ArrayList<>();
             for(Object o : ss){
                 if(o instanceof Object[]){
