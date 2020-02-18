@@ -440,9 +440,10 @@ public class VendorInternalApiV2 {
 
     private VendorUserHolder getLoginObject(VendorUser vendorUser, WebApp webApp){
         VendorUserHolder holder = new VendorUserHolder();
-        AccessToken at = dao.findTwoConditions(AccessToken.class, "vendorUserId", "status", vendorUser.getId(), 'A');
-        if(at != null) {
-            holder.setLastLogin(at.getCreated());
+        String sql = "select b from AccessToken b where  b.vendorUserId = :value0 and b.status = :value1 order by b.created desc";
+        List<AccessToken> ats = dao.getJPQLParams(AccessToken.class, sql, vendorUser.getId(), 'A');
+        if(!ats.isEmpty()) {
+            holder.setLastLogin(ats.get(0).getCreated());
         }
         String token = issueToken(vendorUser, webApp, 500);
         String sql2 = "select b.role from VendorUserRole b where b.vendorUser = :value0";
@@ -1418,6 +1419,51 @@ public class VendorInternalApiV2 {
     }
 
 
+    // idempotent
+    @SecuredUser
+    @POST
+    @Path("/role")
+    public Response createRole(Role role) {
+        try {
+            List<Role> roles = dao.getCondition(Role.class, "name", role.getName());
+            if (!roles.isEmpty()) {
+                return Response.status(409).build();
+            }
+
+            Role r = new Role();
+            r.setName(role.getName());
+            r.setNameAr(role.getNameAr());
+            r.setStatus(role.getStatus());
+            dao.persist(r);
+            for (Activity act : role.getActivityList()) {
+                if (act.isAccess()) {
+                    String sql = "insert into vnd_role_activity (role_id, activity_id) values" + "(" + r.getId() + ","
+                            + act.getId() + ") on conflict do nothing";
+                    dao.insertNative(sql);
+                }
+            }
+            return Response.status(200).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
+
+    @SecuredUser
+    @GET
+    @Path("/all-activities")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllActivities() {
+        try {
+            List<Activity> act = dao.get(Activity.class);
+            return Response.status(200).entity(act).build();
+        } catch (Exception ex) {
+            return Response.status(500).build();
+        }
+    }
+
+
     @SecuredUser
     @PUT
     @Path("/role")
@@ -1425,6 +1471,7 @@ public class VendorInternalApiV2 {
     public Response updateRole(Role role) {
         try {
             List<Activity> all = role.getActivityList();
+            dao.update(role);
             for (Activity activity : all) {
                 if (activity.isAccess()) {
                     String sql = "insert into vnd_role_activity(role_id, activity_id) values " + "(" + role.getId()
