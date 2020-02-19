@@ -11,6 +11,7 @@ import q.rest.vendor.model.contract.*;
 import q.rest.vendor.model.contract.qvm.*;
 import q.rest.vendor.model.entity.*;
 import q.rest.vendor.model.entity.branch.Branch;
+import q.rest.vendor.model.entity.branch.BranchContact;
 import q.rest.vendor.model.entity.plan.*;
 import q.rest.vendor.model.entity.registration.EmailVerification;
 import q.rest.vendor.model.entity.registration.SignupRequest;
