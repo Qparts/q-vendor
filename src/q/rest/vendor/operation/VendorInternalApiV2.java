@@ -14,6 +14,7 @@ import q.rest.vendor.model.entity.branch.Branch;
 import q.rest.vendor.model.entity.branch.BranchContact;
 import q.rest.vendor.model.entity.plan.*;
 import q.rest.vendor.model.entity.registration.EmailVerification;
+import q.rest.vendor.model.entity.registration.PasswordReset;
 import q.rest.vendor.model.entity.registration.SignupRequest;
 import q.rest.vendor.model.entity.user.*;
 
@@ -25,6 +26,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.*;
 import java.io.StringWriter;
+import java.text.DecimalFormat;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -55,35 +58,76 @@ public class VendorInternalApiV2 {
         vmap.put("firstName", "Fareed");
         vmap.put("quotationLink", "http://somelink.com");
         vmap.put("quotationId", 50001);
-        String body = this.getHtmlTemplate(AppConstants.REGISTRATION_COMPLETE_EMAIL_TEMPLATE, vmap);
+        String body = this.getHtmlTemplate(AppConstants.PASSWORD_RESET_TEMPLATE, vmap);
         return Response.status(200).entity(body).build();
     }
 
-
-
+    @SecuredUserVendor
     @GET
-    @Path("test2")
+    @Path("qvm-invoice/{invoiceId}")
     @Produces(MediaType.TEXT_HTML)
-    public Response test2QuotationReadyHtml(){
-        Map<String,Object> vmap = new HashMap<>();
-        vmap.put("firstName", "Fareed");
-        vmap.put("invitationCode", "AS6s1ax");
-        vmap.put("invitations", 10);
-        String body = this.getHtmlTemplate(AppConstants.VENDOR_APPROVED_EMAIL_TEMPLATE, vmap);
-        return Response.status(200).entity(body).build();
+    public Response getHtmlInvoice(@HeaderParam("Authorization") String header, @PathParam(value = "invoiceId") long invoiceId){
+        try{
+            int vendorId = getVendorUserFromHeader(header).getVendorId();
+            PlanSubscription ps = dao.findCondition(PlanSubscription.class, "salesId", invoiceId);
+
+            if(ps == null || ps.getVendorId() != vendorId){
+                return Response.status(401).build();
+            }
+            Response r = this.getSecuredRequest(AppConstants.getQvmSales(invoiceId), header);
+            if(r.getStatus() == 200){
+                QvmSales qvmSales = r.readEntity(QvmSales.class);
+                if(qvmSales.getPaymentOrder().getVendorId() != vendorId){
+                    return Response.status(401).build();
+                }
+                Vendor vendor = dao.find(Vendor.class, vendorId);
+                Plan plan = dao.find(Plan.class, qvmSales.getPaymentOrder().getPlanId());
+                double subtotal = qvmSales.getPaymentOrder().getBaseAmount() - qvmSales.getPaymentOrder().getPlanDiscount() - qvmSales.getPaymentOrder().getPromoDiscount();
+                Helper h = new Helper();
+                String paymentMethodAr = "";
+                String paymentMethodEn = "";
+                if(qvmSales.getPaymentOrder().getPaymentMethod() == 'C'){
+                    paymentMethodAr = "بطاقة ائتمانية";
+                    paymentMethodEn = "Credit/Debit Card";
+                }
+                else if (qvmSales.getPaymentOrder().getPaymentMethod() == 'W'){
+                    paymentMethodAr = "تحويل بنكي";
+                    paymentMethodEn = "Bank Transfer";
+                }
+
+                Map<String,Object> vmap = new HashMap<>();
+                vmap.put("invoiceNumber", qvmSales.getId());
+                vmap.put("orderNumber", qvmSales.getPaymentOrder().getId());
+
+                vmap.put("customerId", vendorId);
+                vmap.put("companyEn", vendor.getName());
+                vmap.put("paymentMethodEn", paymentMethodEn);
+                vmap.put("companyAr", vendor.getNameAr());
+                vmap.put("paymentMethodAr", paymentMethodAr);
+                vmap.put("duration", qvmSales.getPaymentOrder().getOptionDuration());
+                vmap.put("planNameEn", plan.getName());
+                vmap.put("planNameAr", plan.getNameAr());
+                vmap.put("invoiceDate", h.getDateFormat(qvmSales.getCreated(), "dd-MMM-yyyy"));
+                vmap.put("startDate", h.getDateFormat(qvmSales.getPaymentOrder().getPlanStartDate(), "dd-MMM-yyyy"));
+                vmap.put("endDate", h.getDateFormat(qvmSales.getPaymentOrder().getPlanEndDate(), "dd-MMM-yyyy"));
+                vmap.put("amount", "SR "+ new DecimalFormat("#.##").format(qvmSales.getPaymentOrder().getBaseAmount()));
+                vmap.put("discount", "SR " + new DecimalFormat("#.##").format(qvmSales.getPaymentOrder().getPlanDiscount() + qvmSales.getPaymentOrder().getPromoDiscount()));
+                vmap.put("subtotal", "SR "+ new DecimalFormat("#.##").format(subtotal));
+                vmap.put("qty", "1");
+                vmap.put("vatPercentage", (qvmSales.getPaymentOrder().getVatPercentage() *100) + "%");
+                vmap.put("vatNumber", "12312312391237123");
+                vmap.put("vatAmount", "SR "+ new DecimalFormat("#.##").format(subtotal * qvmSales.getPaymentOrder().getVatPercentage()));
+                vmap.put("netTotal", "SR "+ new DecimalFormat("#.##").format(subtotal * qvmSales.getPaymentOrder().getVatPercentage() + subtotal));
+                String body = this.getHtmlTemplate(AppConstants.SUBSCRIPTION_INVOICE_EMAIL_TEMPLATE2, vmap);
+                return Response.status(200).entity(body).build();
+            }
+            return Response.status(404).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
     }
 
-
-
-    @GET
-    @Path("test3")
-    @Produces(MediaType.TEXT_HTML)
-    public Response test3QuotationReadyHtml(){
-        Map<String,Object> vmap = new HashMap<>();
-        vmap.put("activationLink", "AS6s1ax");
-        String body = this.getHtmlTemplate(AppConstants.EMAIL_VERIFICATION_EMAIL_TEMPLATE, vmap);
-        return Response.status(200).entity(body).build();
-    }
 
 
     private String createVerificationObject(VendorUser vendorUser) {
@@ -105,6 +149,28 @@ public class VendorInternalApiV2 {
         ev.setVendorUserId(vendorUser.getId());
         ev.setExpire(Helper.addMinutes(ev.getCreated(), 60*24*14));
         ev.setEmail(vendorUser.getEmail());
+        ev.setStatus('R');
+        dao.persist(ev);
+        return code;
+    }
+
+    private String createPasswordResetObject(VendorUser vendorUser) {
+        String code = "";
+        boolean available = false;
+        do {
+            code = Helper.getRandomString(20);
+            String sql = "select b from PasswordReset b where b.token = :value0 and b.expire >= :value1 and status =:value2";
+            List<PasswordReset> l = dao.getJPQLParams(PasswordReset.class, sql, code, new Date(), 'R');
+            if (l.isEmpty()) {
+                available = true;
+            }
+        } while (!available);
+
+        PasswordReset ev = new PasswordReset();
+        ev.setToken(code);
+        ev.setCreated(new Date());
+        ev.setVendorUserId(vendorUser.getId());
+        ev.setExpire(Helper.addMinutes(ev.getCreated(), 60*24*14));
         ev.setStatus('R');
         dao.persist(ev);
         return code;
@@ -188,7 +254,7 @@ public class VendorInternalApiV2 {
         }
     }
 
-    @SecuredUser
+    @SecuredUserVendor
     @GET
     @Path("vendor/{vendorId}/detailed")
     public Response getVendorDetailed(@PathParam(value = "vendorId") int vendorId) {
@@ -563,6 +629,50 @@ public class VendorInternalApiV2 {
         }
     }
 
+    @ValidApp
+    @PUT
+    @Path("reset-password")
+    public Response resetPassword(@HeaderParam("Authorization") String authHeader, Map<String, String> map){
+        try{
+            WebApp webApp = getWebAppFromAuthHeader(authHeader);
+            String token = map.get("token");
+            String password = map.get("newPassword");
+            String sql = "select b from PasswordReset b where b.token = :value0 and b.status = :value1";
+            PasswordReset pr = dao.findJPQLParams(PasswordReset.class, sql , token, 'R');
+            if(pr == null){
+                return Response.status(404).build();
+            }
+            VendorUser vu = dao.find(VendorUser.class, pr.getVendorUserId());
+            vu.setPassword(Helper.cypher(password));
+            VendorUserHolder holder  = getLoginObject(vu, webApp);
+            pr.setStatus('V');
+            dao.update(pr);
+            return Response.status(200).entity(holder).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+
+
+
+    }
+
+    @ValidApp
+    @POST
+    @Path("reset-password-verify")
+    public Response verifyPasswordReset(Map<String,String> map){
+        try{
+            String token = map.get("token");
+            String sql = "select b from PasswordReset b where b.token = :value0 and b.status = :value1";
+            PasswordReset pr = dao.findJPQLParams(PasswordReset.class, sql, token, 'R');
+            if(pr == null){
+                return Response.status(404).build();
+            }
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
 
     @ValidApp
     @POST
@@ -775,6 +885,28 @@ public class VendorInternalApiV2 {
     }
 
 
+    @ValidApp
+    @POST
+    @Path("password-reset-request")
+    public Response RequestPasswordReset(Map<String,String> map){
+       try{
+           String sql = "select b from VendorUser b where b.email = :value0";
+           VendorUser vendorUser = dao.findJPQLParams(VendorUser.class, sql, map.get("email").trim().toLowerCase());
+           if(vendorUser != null){
+               String token = createPasswordResetObject(vendorUser);
+               Map<String, Object> vmap = new HashMap<>();
+               vmap.put("firstName", vendorUser.getFirstName());
+               vmap.put("passwordResetLink", AppConstants.getPasswordResetLink(token));
+               String subject = "Password Reset - إعادة تهيئة كلمة المرور";
+               String body = this.getHtmlTemplate(AppConstants.PASSWORD_RESET_TEMPLATE, vmap);
+               async.sendHtmlEmail(vendorUser.getEmail(), subject, body);
+           }
+           return Response.status(201).build();
+       }catch (Exception ex){
+           return Response.status(500).build();
+       }
+    }
+
 
 
     @ValidApp
@@ -851,6 +983,56 @@ public class VendorInternalApiV2 {
         }
     }
 
+
+    @SecuredUserVendor
+    @POST
+    @Path("subscribe")
+    public Response createSubscription(QvmSales qvmSales){
+        try{
+            List<PlanSubscription> subs = getSubscription(qvmSales.getPaymentOrder().getVendorId());
+            PlanSubscription last = null;
+            for(var sub : subs){
+                if(sub.getStatus() == 'A'){
+                    last = sub;
+                    break;
+                }
+            }
+            PlanSubscription newSub = new PlanSubscription();
+            newSub.setStatus('A');
+            newSub.setCreated(new Date());
+            newSub.setVendorId(qvmSales.getPaymentOrder().getVendorId());
+            newSub.setPlanId(qvmSales.getPaymentOrder().getPlanId());
+            newSub.setSalesId(qvmSales.getId());
+
+            Plan plan = dao.find(Plan.class, qvmSales.getPaymentOrder().getPlanId());
+            initPlan(plan);
+            newSub.setOptionId(plan.getPlanOptionFromDuration(qvmSales.getPaymentOrder().getOptionDuration()).getId());
+            newSub.setCreatedBy(0);
+            if(last == null){
+                //new subscription
+                newSub.setStartDate(qvmSales.getPaymentOrder().getPlanStartDate());
+                newSub.setEndDate(qvmSales.getPaymentOrder().getPlanEndDate());
+                dao.persist(newSub);
+            }
+            else{
+                //migrate old subscription to new one
+                last.setStatus('E');
+                dao.update(last);
+                //check how many days remaining in last
+                Helper h = new Helper();
+                long diffDays = ChronoUnit.DAYS.between(h.convertToLocalDate(new Date()), h.convertToLocalDate(last.getEndDate()));
+                Date newEndDate = Helper.addDays(qvmSales.getPaymentOrder().getPlanEndDate(), diffDays);
+                newSub.setEndDate(newEndDate);
+                newSub.setStartDate(new Date());
+                dao.persist(newSub);
+            }
+            return Response.status(200).entity(getSubscription(qvmSales.getPaymentOrder().getVendorId())).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUser
     @POST
     @Path("subscription/free-trial")
@@ -912,6 +1094,11 @@ public class VendorInternalApiV2 {
             List<PlanOffer> planOffers = dao.getCondition(PlanOffer.class, "planId", plan.getId());
             String sql = "select b.role from PlanRole b where b.plan =:value0";
             List<Role> roles = dao.getJPQLParams(Role.class, sql, plan);
+            for(Role role : roles){
+                sql = "select b.activity from RoleActivity b where b.role = :value0";
+                List<Activity> acts = dao.getJPQLParams(Activity.class, sql, role);
+                role.setActivityList(acts);
+            }
             plan.setRoles(roles);
             plan.setPlanOptions(planOptions);
             plan.setPlanOffers(planOffers);
@@ -1356,7 +1543,16 @@ public class VendorInternalApiV2 {
 
     private List<PlanSubscription> getSubscription(int vendorId){
         String sql = "select b from PlanSubscription b where b.vendorId = :value0 order by b.endDate desc";
-        return dao.getJPQLParams(PlanSubscription.class, sql, vendorId);
+        List<PlanSubscription> subs = dao.getJPQLParams(PlanSubscription.class, sql, vendorId);
+        for(PlanSubscription ps : subs){
+            if(ps.getStatus() == 'A'){
+                if(ps.getEndDate().before(new Date())){
+                    ps.setStatus('E');
+                    dao.update(ps);
+                }
+            }
+        }
+        return subs;
     }
 
     private List<PlanReferral> getReferrals(int vendorId){

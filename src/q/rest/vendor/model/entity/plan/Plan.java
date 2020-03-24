@@ -1,5 +1,6 @@
 package q.rest.vendor.model.entity.plan;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import q.rest.vendor.model.entity.user.Role;
 
 import javax.persistence.*;
@@ -35,6 +36,16 @@ public class Plan implements Serializable {
     private List<Role> roles;
     @Transient
     private List<PlanOffer> planOffers;
+
+    @JsonIgnore
+    public PlanOption getPlanOptionFromDuration(int duration){
+        for(PlanOption po : planOptions){
+            if(po.getDuration() == duration){
+                return po;
+            }
+        }
+        return null;
+    }
 
     public List<PlanOffer> getPlanOffers() {
         return planOffers;

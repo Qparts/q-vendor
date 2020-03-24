@@ -32,6 +32,16 @@ public class PlanSubscription implements Serializable {
     private Date created;
     @Column(name="created_by")
     private int createdBy;
+    @Column(name="sales_id")
+    private Long salesId;
+
+    public Long getSalesId() {
+        return salesId;
+    }
+
+    public void setSalesId(Long salesId) {
+        this.salesId = salesId;
+    }
 
     public int getId() {
         return id;

@@ -113,6 +113,10 @@ public class Helper {
         return new Date(original.getTime() + (1000L * 60 * minutes));
     }
 
+    public static Date addDays(Date original, long days) {
+        return new Date(original.getTime() + (1000L * 60 * 60 * 24 * days));
+    }
+
     public String getDateFormat(Date date){
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSX");
         return sdf.format(date);
