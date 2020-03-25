@@ -7,18 +7,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/PaymentOrder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/contract/QvmSales.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/PasswordReset.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/password-reset.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/subscription-invoice.vm" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/subscription-invoice2.vm" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/ContactUs.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/AppConstants.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/helper/Helper.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/Plan.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/Plan.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanSubscription.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/plan/PlanSubscription.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/SignupRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/model/entity/registration/SignupRequest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -192,7 +182,8 @@
       <workItem from="1584488793432" duration="4618000" />
       <workItem from="1584816942283" duration="631000" />
       <workItem from="1584817635125" duration="4814000" />
-      <workItem from="1584991842906" duration="7943000" />
+      <workItem from="1584991842906" duration="7991000" />
+      <workItem from="1585092929924" duration="2048000" />
     </task>
     <servers />
   </component>

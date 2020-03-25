@@ -13,6 +13,7 @@ import q.rest.vendor.model.entity.*;
 import q.rest.vendor.model.entity.branch.Branch;
 import q.rest.vendor.model.entity.branch.BranchContact;
 import q.rest.vendor.model.entity.plan.*;
+import q.rest.vendor.model.entity.registration.ContactUs;
 import q.rest.vendor.model.entity.registration.EmailVerification;
 import q.rest.vendor.model.entity.registration.PasswordReset;
 import q.rest.vendor.model.entity.registration.SignupRequest;
@@ -717,6 +718,45 @@ public class VendorInternalApiV2 {
             map2.put("activationLink", AppConstants.getActivationLink(vendorUser.getEmail(), activationCode));
             String body2 = this.getHtmlTemplate(AppConstants.EMAIL_VERIFICATION_EMAIL_TEMPLATE, map2);
             async.sendHtmlEmail(vendorUser.getEmail(), subject2, body2);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @GET
+    @Path("contact-us/pending")
+    public Response getPendingContactUs(){
+        try{
+            String sql = "select b from ContactUs b where b.status = :value0 order by b.created asc";
+            List<ContactUs> contactUsList = dao.getJPQLParamsMax(ContactUs.class, sql, 'N');
+            return Response.status(200).entity(contactUsList).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @PUT
+    @Path("contact-us")
+    public Response updateContactUs(ContactUs contactUs){
+        try{
+            contactUs.setStatus('P');//Processed
+            dao.update(contactUs);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @ValidApp
+    @POST
+    @Path("contact-us")
+    public Response createContactUs(ContactUs contactUs){
+        try{
+            contactUs.setCreated(new Date());
+            dao.persist(contactUs);
             return Response.status(201).build();
         }catch (Exception ex){
             return Response.status(500).build();
