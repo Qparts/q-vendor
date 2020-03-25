@@ -645,6 +645,7 @@ public class VendorInternalApiV2 {
             }
             VendorUser vu = dao.find(VendorUser.class, pr.getVendorUserId());
             vu.setPassword(Helper.cypher(password));
+            dao.update(vu);
             VendorUserHolder holder  = getLoginObject(vu, webApp);
             pr.setStatus('V');
             dao.update(pr);
