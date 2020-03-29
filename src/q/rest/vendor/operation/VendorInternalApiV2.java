@@ -299,6 +299,49 @@ public class VendorInternalApiV2 {
         }
     }
 
+    @SecuredUser
+    @DELETE
+    @Path("vendor-user-role/role/{roleId}/user/{vendorUserId}")
+    public Response deleteUserRole(@PathParam(value = "roleId") int roleId, @PathParam(value = "vendorUserId") int vendorUserId){
+        try{
+            String sql = "delete from vnd_user_role where role_id = " + roleId + " and vendor_user_id = " + vendorUserId;
+            dao.updateNative(sql);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("vendor-user-role")
+    public Response addUserRole(Map<String,Object> map){
+        try{
+            int roleId = (int) map.get("roleId");
+            int vendorUserId = (int) map.get("vendorUserId");
+            String sql = "insert into vnd_user_role (role_id, vendor_user_id) values(" + roleId + "," + vendorUserId + ")";
+            dao.insertNative(sql);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+    @SecuredUser
+    @POST
+    @Path("plan-role")
+    public Response addPlanRole(Map<String,Object> map){
+        try{
+            int roleId = (int) map.get("roleId");
+            int planId = (int) map.get("planId");
+            String sql = "insert into vnd_plan_role (role_id, plan_id) values(" + roleId + " , " + planId + ")";
+            dao.insertNative(sql);
+            return Response.status(201).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUserVendor
     @GET
     @Path("plans")
