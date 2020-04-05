@@ -6,6 +6,7 @@ public class AppConstants {
     public final static String PASSWORD = "qetaa3!Cs@";
     public final static String SMTP_SERVER = "smtp.zoho.com";
     public final static String PRODUCT_WS_ENDPOINT = "ws://localhost:8081/service-q-product/ws/";
+    public final static String VAT_NUMBER = "310229170200003";
 
     private final static String WEBSITE_BASE_URL = "http://qtest.fareed9.com/";
     private static final String USER_SERVICE = "http://localhost:8081/service-q-user/rest/internal/api/v2/";

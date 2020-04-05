@@ -1,0 +1,64 @@
+swagger: "2.0"
+info:
+  title: Vendor API
+  description: Vendor API.
+  version: 1.0.0
+host: localhost:8081
+tags:
+  - name: SecuredVendor
+    description: only vendors have access to this
+  - name: SecuredUser
+    description: only users have access to this
+  - name: SecuredUserVendor
+    description: only users, and vendors have access to this
+  - name: ValidApp
+    description: accessible to all users if app is allowed through secret key
+schemes:
+  - https
+paths:
+  /qvm-invoice/{invoiceId}:
+    get:
+      summary: Returns a list of users.
+      description: Optional extended description in Markdown.
+      tags:
+        - SecuredUserVendor
+      produces:
+        - text/html
+      parameters:
+        - in: path
+          name: invoiceId
+          required: true
+          schema:
+            type: number
+            format: int32
+      responses:
+        200:
+          description: OK, returns invoice in html format
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+  /vendors/:
+    get:
+      summary: Returns a list of vendors.
+      description: Optional extended description in Markdown.
+      tags:
+        - SecuredUserVendor
+      produces:
+        - text/html
+      parameters:
+        - in: path
+          name: invoiceId
+          required: true
+          schema:
+            type: number
+            format: int32
+      responses:
+        200:
+          description: OK, returns invoice in html format
+        401:
+          description: Unauthorized
+        500:
+          description: Server Error
+
+

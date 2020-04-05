@@ -63,6 +63,32 @@ public class VendorInternalApiV2 {
         return Response.status(200).entity(body).build();
     }
 
+
+    @SecuredVendor
+    @GET
+    @Path("plan-promotion/code/{code}/vendor/{vendorId}/plan/{planId}/option/{optionId}")
+    public Response getPlanPromotion(@PathParam(value = "vendorId") int vendorId,
+                                     @PathParam(value = "code") String code,
+                                     @PathParam(value = "optionId") int optionId,
+                                     @PathParam(value = "planId") int planId){
+        try{
+            String sql = "select b from PlanPromotion b where b.promoCode = :value0 and b.optionId = :value1 and b.planId = :value2 and b.status = :value3";
+            PlanPromotion planPromotion = dao.findJPQLParams(PlanPromotion.class, sql, code, optionId, planId, 'A');
+            if(planPromotion == null){
+                return Response.status(404).build();
+            }
+            if(planPromotion.isVendorUnique()){
+                if(planPromotion.getVendorId() != vendorId){
+                    return Response.status(404).build();
+                }
+            }
+            return Response.status(200).entity(planPromotion).build();
+        }catch (Exception ex){
+            ex.printStackTrace();
+            return Response.status(500).build();
+        }
+    }
+
     @SecuredUserVendor
     @GET
     @Path("qvm-invoice/{invoiceId}")
@@ -116,7 +142,7 @@ public class VendorInternalApiV2 {
                 vmap.put("subtotal", "SR "+ new DecimalFormat("#.##").format(subtotal));
                 vmap.put("qty", "1");
                 vmap.put("vatPercentage", (qvmSales.getPaymentOrder().getVatPercentage() *100) + "%");
-                vmap.put("vatNumber", "12312312391237123");
+                vmap.put("vatNumber", AppConstants.VAT_NUMBER);
                 vmap.put("vatAmount", "SR "+ new DecimalFormat("#.##").format(subtotal * qvmSales.getPaymentOrder().getVatPercentage()));
                 vmap.put("netTotal", "SR "+ new DecimalFormat("#.##").format(subtotal * qvmSales.getPaymentOrder().getVatPercentage() + subtotal));
                 String body = this.getHtmlTemplate(AppConstants.SUBSCRIPTION_INVOICE_EMAIL_TEMPLATE2, vmap);
@@ -193,6 +219,7 @@ public class VendorInternalApiV2 {
         template.merge(velocityContext, writer);
         return writer.toString();
     }
+
 
     @SecuredUserVendor
     @GET
@@ -1090,7 +1117,7 @@ public class VendorInternalApiV2 {
 
             Plan plan = dao.find(Plan.class, qvmSales.getPaymentOrder().getPlanId());
             initPlan(plan);
-            newSub.setOptionId(plan.getPlanOptionFromDuration(qvmSales.getPaymentOrder().getOptionDuration()).getId());
+            newSub.setOptionId(qvmSales.getPaymentOrder().getOptionId());
             newSub.setCreatedBy(0);
             if(last == null){
                 //new subscription
@@ -1472,8 +1499,7 @@ public class VendorInternalApiV2 {
             updateQvmObjectWithBranches(list);
             return Response.status(200).entity(list).build();
         }catch (Exception ex){
-//            ex.printStackTrace();
-            return Response.status(500).build();
+           return Response.status(500).build();
         }
     }
 

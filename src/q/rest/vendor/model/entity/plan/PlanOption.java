@@ -9,7 +9,7 @@ import java.util.Date;
 public class PlanOption implements Serializable {
 
     @Id
-    @SequenceGenerator(name = "vnd_plan_option_id_seq_gen", sequenceName = "vnd_plan_option_option_id_seq", initialValue=1, allocationSize = 1)
+    @SequenceGenerator(name = "vnd_plan_option_id_seq_gen", sequenceName = "vnd_plan_option_id_seq", initialValue=1, allocationSize = 1)
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "vnd_plan_option_id_seq_gen")
     @Column(name="id")
     private int id;
@@ -17,6 +17,16 @@ public class PlanOption implements Serializable {
     private int planId;
     @Column(name="duration_days")
     private int duration;
+    @Column(name="calculation_days")
+    private int calculationDays;
+
+    public int getCalculationDays() {
+        return calculationDays;
+    }
+
+    public void setCalculationDays(int calculationDays) {
+        this.calculationDays = calculationDays;
+    }
 
     public int getId() {
         return id;

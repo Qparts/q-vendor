@@ -16,6 +16,9 @@ public class PaymentOrder implements Serializable {
     private long cartId;//if sales type is C
     private int planId;// if sales type is S
     private int optionDuration;// if sales type is S
+    private int optionDurationActual;
+    private int optionId;
+    private Integer promoId;
     private double baseAmount;
     private double planDiscount;// if sales type is S
     private double promoDiscount;
@@ -282,5 +285,29 @@ public class PaymentOrder implements Serializable {
 
     public void setStatus(char status) {
         this.status = status;
+    }
+
+    public int getOptionId() {
+        return optionId;
+    }
+
+    public void setOptionId(int optionId) {
+        this.optionId = optionId;
+    }
+
+    public Integer getPromoId() {
+        return promoId;
+    }
+
+    public void setPromoId(Integer promoId) {
+        this.promoId = promoId;
+    }
+
+    public int getOptionDurationActual() {
+        return optionDurationActual;
+    }
+
+    public void setOptionDurationActual(int optionDurationActual) {
+        this.optionDurationActual = optionDurationActual;
     }
 }
