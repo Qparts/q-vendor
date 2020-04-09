@@ -64,6 +64,28 @@ public class VendorInternalApiV2 {
     }
 
 
+    @SecuredUser
+    @GET
+    @Path("plan-promotions")
+    public Response getPlanPromotions(){
+        try{
+            String sql = "select b from PlanPromotion b order by b.startDate desc";
+            List<PlanPromotion> pps = dao.getJPQLParams(PlanPromotion.class, sql);
+            for(PlanPromotion planPromotion : pps){
+                if(planPromotion.getStatus() == 'A'){
+                    if(planPromotion.getEndDate().before(new Date())){
+                        planPromotion.setStatus('E');
+                        dao.update(planPromotion);
+                    }
+                }
+            }
+            return Response.status(200).entity(pps).build();
+        }catch (Exception ex){
+            return Response.status(500).build();
+        }
+    }
+
+
     @SecuredVendor
     @GET
     @Path("plan-promotion/code/{code}/vendor/{vendorId}/plan/{planId}/option/{optionId}")
@@ -77,6 +99,13 @@ public class VendorInternalApiV2 {
             if(planPromotion == null){
                 return Response.status(404).build();
             }
+
+            if(planPromotion.getEndDate().before(new Date())){
+                planPromotion.setStatus('E');
+                dao.update(planPromotion);
+                return Response.status(410).build();
+            }
+
             if(planPromotion.isVendorUnique()){
                 if(planPromotion.getVendorId() != vendorId){
                     return Response.status(404).build();
