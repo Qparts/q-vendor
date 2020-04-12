@@ -282,6 +282,7 @@ public class VendorInternalApiV2 {
             }
             return Response.status(200).entity(holders).build();
         } catch (Exception ex) {
+            ex.printStackTrace();
             return Response.status(500).build();
         }
     }
