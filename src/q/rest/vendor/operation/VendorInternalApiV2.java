@@ -1004,6 +1004,7 @@ public class VendorInternalApiV2 {
         vendor.setName(sr.getVendorName());
         vendor.setNameAr(sr.getVendorNameAr());
         vendor.setNotes(sr.getNotes());
+        vendor.setCityId(sr.getCityId());
         vendor.setStatus('A');
         dao.persist(vendor);
         return vendor;
