@@ -288,15 +288,25 @@ public class VendorInternalApiV2 {
     }
 
     private VendorHolder getVendorHolder(Vendor vendor){
+        System.out.println(1);
         VendorHolder holder = new VendorHolder();
+        System.out.println(2);
         holder.setVendor(vendor);
+        System.out.println(3);
         holder.setAccessTokens(getAccessTokens(vendor.getId()));
+        System.out.println(4);
         holder.setBranches(getVendorBranches(vendor.getId()));
+        System.out.println(5);
         holder.setKeywords(getVendorSearchKeywords(vendor.getId()));
+        System.out.println(6);
         holder.setPlanSubscriptions(getSubscription(vendor.getId()));
+        System.out.println(7);
         holder.setVendorPolicies(getVendorPolicies(vendor.getId()));
+        System.out.println(8);
         holder.setReferrals(getReferrals(vendor.getId()));
+        System.out.println(9);
         holder.setVendorUsers(getVendorUserHolders(vendor.getId()));
+        System.out.println(10);
         return holder;
     }
 
