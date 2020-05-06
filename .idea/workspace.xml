@@ -8,7 +8,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2cad0b92-f71b-41e0-99de-ae8b9347765d" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/q/rest/vendor/operation/VendorInternalApiV2.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/web/WEB-INF/velocity/email/vendor-approved.vm" beforeDir="false" afterPath="$PROJECT_DIR$/web/WEB-INF/velocity/email/vendor-approved.vm" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -226,7 +226,9 @@
       <workItem from="1586020752345" duration="9712000" />
       <workItem from="1586066981991" duration="1848000" />
       <workItem from="1586411868142" duration="4859000" />
-      <workItem from="1588413140275" duration="492000" />
+      <workItem from="1588413140275" duration="1770000" />
+      <workItem from="1588524214936" duration="530000" />
+      <workItem from="1588784430653" duration="217000" />
     </task>
     <servers />
   </component>
